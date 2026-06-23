@@ -163,7 +163,10 @@
         .music-artist{font-size:.92rem;color:var(--text-s);margin-bottom:24px}
         .music-card .aw audio{width:100%;height:48px}
         .music-card .mn{margin-top:16px}
-        
+
+        .mv-bar.playing{opacity:1}
+        .mv-bar.paused{animation-play-state:paused;opacity:.25;transform:scaleY(.3)}
+
         @media(max-width:640px){
             .tab-b{padding:6px 10px;font-size:.75rem}
             .os{flex-direction:column;align-items:center;text-align:center}
@@ -173,6 +176,9 @@
             .panel{right:12px;left:12px;width:auto}
             .nav-inner{padding:0 16px}
             .page{padding:28px 16px}
+            .music-visual{height:80px;gap:4px}
+            .mv-bar{width:8px}
+            .music-card{padding:24px}
         }
     </style>
 </head>
@@ -251,16 +257,26 @@
         </div>
 
         <div class="page" id="p-music">
-            <div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%">
-                <div class="mp card">
+            <div class="page-inner music-wrap">
+                <div class="music-visual" id="mVisual">
+                    <div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div>
+                    <div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div>
+                    <div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div>
+                    <div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div>
+                    <div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div>
+                    <div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div>
+                </div>
+                <div class="card music-card">
                     <div class="ml"><i data-lucide="music-2"></i>Lagu favorit</div>
+                    <div class="music-title">Judul Lagu</div>
+                    <div class="music-artist">Nama Artis</div>
                     <div class="aw">
-                        <audio controls preload="none">
+                        <audio controls preload="none" id="mAudio">
                             <source src="lagu.mp3" type="audio/mpeg">
                             browser mu tidak support audio.
                         </audio>
                     </div>
-                    <p class="mn"></p>
+                    <p class="mn">tekan play untuk dengar lagu favorit ku.</p>
                 </div>
             </div>
         </div>
@@ -319,6 +335,13 @@
         let tt;function showToast(m){toast.textContent=m;toast.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('show'),1500)}
 
         document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){const on=document.querySelector('.tab-b.on');if(on&&on.nextElementSibling&&on.nextElementSibling.classList.contains('tab-b'))goTo(on.nextElementSibling.dataset.p)}if(e.key==='ArrowLeft'){const on=document.querySelector('.tab-b.on');if(on&&on.previousElementSibling&&on.previousElementSibling.classList.contains('tab-b'))goTo(on.previousElementSibling.dataset.p)}});
+
+        const mAudio=document.getElementById('mAudio'),mBars=document.querySelectorAll('#mVisual .mv-bar');
+        if(mAudio){
+            mAudio.addEventListener('play',()=>mBars.forEach(b=>{b.classList.add('playing');b.classList.remove('paused')}));
+            mAudio.addEventListener('pause',()=>mBars.forEach(b=>{b.classList.remove('playing');b.classList.add('paused')}));
+            mAudio.addEventListener('ended',()=>mBars.forEach(b=>{b.classList.remove('playing');b.classList.add('paused')}));
+        }
 
         lucide.createIcons();
     </script>
