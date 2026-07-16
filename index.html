@@ -18,6 +18,7 @@
         html,body{height:100%;overflow:hidden}
         body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;transition:background .4s,color .4s;display:flex;flex-direction:column}
 
+        /* ---------- THEME: Soft Brutalism (sb) ---------- */
         body.sb .card{border:2.5px solid var(--text);border-radius:var(--r);box-shadow:4px 4px 0 var(--text);transition:transform .2s,box-shadow .2s,border-color .4s}
         body.sb .card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--text)}
         body.sb .btn{border:2.5px solid var(--text);border-radius:var(--rs);box-shadow:3px 3px 0 var(--text);transition:transform .15s,box-shadow .15s,background .3s,border-color .3s}
@@ -36,6 +37,7 @@
         body.sb .tab-b{border:2px solid var(--text);border-bottom-color:transparent;background:var(--card);border-radius:var(--rs) var(--rs) 0 0;position:relative;z-index:2;margin-bottom:-2.5px}
         body.sb .tab-b.on{background:var(--bg)}
 
+        /* ---------- THEME: Simple (sw) ---------- */
         body.sw .card{border:1px solid var(--border);border-radius:var(--r);box-shadow:0 1px 3px rgba(0,0,0,.04);transition:box-shadow .3s,border-color .3s}
         body.sw .card:hover{box-shadow:0 8px 24px rgba(0,0,0,.07)}
         body.sw .btn{border:1px solid var(--border);border-radius:var(--rs);box-shadow:0 1px 2px rgba(0,0,0,.04);transition:all .3s}
@@ -50,6 +52,40 @@
         body.sw .tab-b{border:1px solid transparent;border-bottom:2px solid transparent;border-radius:var(--rs)}
         body.sw .tab-b.on{border-bottom-color:var(--accent);color:var(--accent)}
 
+        /* ---------- THEME: Dark Glass (dg) ---------- */
+        body.dg{--bg:#0b0c10;--bg-s:#15171d;--text:#f2f3f5;--text-s:#9a9ea8;--border:#2a2d36;--card:#15171dcc}
+        body.dg .card{border:1px solid rgba(255,255,255,.08);border-radius:var(--r);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,0));backdrop-filter:blur(10px);box-shadow:0 8px 24px rgba(0,0,0,.35);transition:box-shadow .3s,border-color .3s,transform .2s}
+        body.dg .card:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.5);border-color:var(--accent)}
+        body.dg .btn{border:1px solid rgba(255,255,255,.12);border-radius:var(--rs);background:rgba(255,255,255,.03);color:var(--text);backdrop-filter:blur(8px);transition:all .3s}
+        body.dg .btn:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset,0 0 18px var(--accent-ghost)}
+        body.dg .btn-p{background:linear-gradient(135deg,var(--accent),var(--accent-dark));border-color:var(--accent);box-shadow:0 0 22px var(--accent-ghost)}
+        body.dg .tag{border:1px solid rgba(255,255,255,.1);border-radius:100px;background:rgba(255,255,255,.03)}
+        body.dg .nav-bar{border-bottom:1px solid rgba(255,255,255,.08);background:rgba(11,12,16,.75)}
+        body.dg .mp{border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+        body.dg .oi{border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+        body.dg .panel{border:1px solid rgba(255,255,255,.1);box-shadow:0 20px 50px rgba(0,0,0,.6);background:#15171de6;backdrop-filter:blur(16px)}
+        body.dg .tab-b{border-radius:var(--rs);color:var(--text-s)}
+        body.dg .tab-b.on{background:rgba(255,255,255,.06);color:var(--text)}
+        body.dg .to{border-color:rgba(255,255,255,.12);color:var(--text)}
+        body.dg .s-btn:hover{background:rgba(255,255,255,.06)}
+
+        /* ---------- THEME: Terminal (tm) ---------- */
+        body.tm{--bg:#0a0f0a;--bg-s:#0f1a0f;--text:#c9f5c9;--text-s:#5fa85f;--border:#1e3a1e;--card:#0d150d}
+        body.tm,body.tm .hero-t,body.tm .music-title,body.tm .nav-logo{font-family:'Space Grotesk',monospace}
+        body.tm .card{border:1px solid var(--border);border-radius:4px;box-shadow:none;transition:border-color .2s,box-shadow .2s}
+        body.tm .card:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(34,197,94,.15)}
+        body.tm .btn{border:1px solid var(--border);border-radius:4px;color:var(--text);transition:all .2s}
+        body.tm .btn:hover{border-color:var(--accent);box-shadow:0 0 10px var(--accent-ghost)}
+        body.tm .btn-p{border-color:var(--accent);background:var(--accent-ghost)}
+        body.tm .tag{border:1px solid var(--border);border-radius:2px}
+        body.tm .nav-bar{border-bottom:1px solid var(--border)}
+        body.tm .mp{border:1px solid var(--border)}
+        body.tm .oi{border:1px solid var(--border);filter:grayscale(.15)}
+        body.tm .panel{border:1px solid var(--border);box-shadow:0 0 24px rgba(34,197,94,.1);background:#0d150df2}
+        body.tm .tab-b{border-radius:2px}
+        body.tm .tab-b.on{background:var(--accent-ghost)}
+        body.tm .hero-g::before{content:'> '}
+
         .nav-bar{position:relative;z-index:100;background:rgba(250,250,250,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:background .4s,border-color .4s;flex-shrink:0}
         .nav-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;padding:0 24px}
         .nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.25rem;color:var(--text);text-decoration:none;transition:color .3s}
@@ -63,15 +99,15 @@
         .overlay{position:fixed;inset:0;z-index:150;display:none}
         .overlay.on{display:block}
 
-        .panel{position:fixed;top:68px;right:24px;z-index:200;background:var(--card);border-radius:var(--r);padding:22px;width:288px;display:none;animation:sd .2s ease}
+        .panel{position:fixed;top:68px;right:24px;z-index:200;background:var(--card);border-radius:var(--r);padding:22px;width:288px;display:none;animation:sd .2s ease;max-height:calc(100vh - 88px);overflow-y:auto}
         .panel.on{display:block}
         @keyframes sd{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 
         .pl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-s);margin-bottom:10px}
         .ps{margin-bottom:20px}
         .ps:last-child{margin-bottom:0}
-        .to-row{display:flex;gap:8px}
-        .to{flex:1;padding:10px 6px;border:2px solid var(--border);border-radius:var(--rs);background:transparent;cursor:pointer;font-size:.78rem;font-weight:600;color:var(--text);transition:all .2s;text-align:center;font-family:'Inter',sans-serif}
+        .to-row{display:flex;gap:8px;flex-wrap:wrap}
+        .to{flex:1;min-width:60px;padding:10px 6px;border:2px solid var(--border);border-radius:var(--rs);background:transparent;cursor:pointer;font-size:.78rem;font-weight:600;color:var(--text);transition:all .2s;text-align:center;font-family:'Inter',sans-serif}
         .to:hover{border-color:var(--accent)}
         .to.on{border-color:var(--accent);background:var(--accent);color:#fff}
         .cg{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
@@ -93,7 +129,7 @@
         .hero-g{font-size:1.1rem;color:var(--text-s);margin-bottom:10px}
         .hero-t{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:800;line-height:1.08;margin-bottom:20px;color:var(--text)}
         .hero-t .ac{color:var(--accent);transition:color .4s}
-        .hero-d{font-size:1rem;color:var(--text-s);max-width:520px;line-height:1.75;margin-bottom:28px}
+        .hero-d{font-size:1rem;color:var(--text-s);max-width:560px;line-height:1.75;margin-bottom:28px}
         .hero-a{display:flex;gap:12px;flex-wrap:wrap}
         .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;font-size:.88rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;background:var(--card);color:var(--text);transition:all .2s}
         .btn-p{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -101,8 +137,13 @@
         .tag{background:var(--card);color:var(--text-s);font-size:.78rem;padding:5px 16px;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
         .tag svg{width:14px;height:14px}
 
-        .st{font-size:.78rem;font-weight:700;color:var(--text-s);margin-bottom:20px;text-transform:uppercase;letter-spacing:.1em}
+        .st{font-size:.78rem;font-weight:700;color:var(--text-s);margin-bottom:20px;text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;justify-content:space-between;gap:12px}
+        .st-sub{font-size:.72rem;font-weight:500;text-transform:none;letter-spacing:0;color:var(--text-s);opacity:.75}
 
+        .pcat{margin-bottom:28px}
+        .pcat:last-child{margin-bottom:0}
+        .pcat-h{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+        .pcat-h svg{width:14px;height:14px}
         .pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
         .pc{padding:20px;background:var(--card);cursor:default}
         .pi{width:36px;height:36px;border-radius:var(--rs);background:var(--accent-ghost);display:flex;align-items:center;justify-content:center;color:var(--accent);margin-bottom:12px;transition:background .4s,color .4s}
@@ -167,6 +208,9 @@
         .mv-bar.playing{opacity:1}
         .mv-bar.paused{animation-play-state:paused;opacity:.25;transform:scaleY(.3)}
 
+        .lang-sw{display:flex;gap:6px}
+        .lang-sw button{width:auto;padding:8px 12px;font-size:.78rem}
+
         @media(max-width:640px){
             .tab-b{padding:6px 10px;font-size:.75rem}
             .os{flex-direction:column;align-items:center;text-align:center}
@@ -188,10 +232,10 @@
         <div class="nav-inner">
             <a href="#" class="nav-logo" onclick="return false">nsn.</a>
             <div class="nav-r">
-                <button class="tab-b on" data-p="about">about</button>
-                <button class="tab-b" data-p="projects">projects</button>
-                <button class="tab-b" data-p="music">music</button>
-                <button class="tab-b" data-p="favorite">favorite</button>
+                <button class="tab-b on" data-p="about" data-i18n="nav.about">about</button>
+                <button class="tab-b" data-p="projects" data-i18n="nav.projects">projects</button>
+                <button class="tab-b" data-p="music" data-i18n="nav.music">music</button>
+                <button class="tab-b" data-p="favorite" data-i18n="nav.favorite">favorite</button>
                 <button class="s-btn" id="sBtn" aria-label="Settings"><i data-lucide="sliders-horizontal"></i></button>
             </div>
         </div>
@@ -201,18 +245,27 @@
 
     <div class="panel" id="pnl">
         <div class="ps">
-            <div class="pl">Tema</div>
-            <div class="to-row">
-                <button class="to on" data-t="sb">Soft Brutalism</button>
-                <button class="to" data-t="sw">Simple</button>
+            <div class="pl" data-i18n="panel.lang">Bahasa</div>
+            <div class="to-row lang-sw">
+                <button class="to on" data-lang="id">Indonesia</button>
+                <button class="to" data-lang="en">English</button>
             </div>
         </div>
         <div class="ps">
-            <div class="pl">Warna Aksen</div>
+            <div class="pl" data-i18n="panel.theme">Tema</div>
+            <div class="to-row">
+                <button class="to on" data-t="sb">Brutalism</button>
+                <button class="to" data-t="sw">Simple</button>
+                <button class="to" data-t="dg">Dark Glass</button>
+                <button class="to" data-t="tm">Terminal</button>
+            </div>
+        </div>
+        <div class="ps">
+            <div class="pl" data-i18n="panel.accent">Warna Aksen</div>
             <div class="cg" id="cGrid"></div>
             <div class="ccr">
                 <input type="color" class="cci" id="cCustom" value="#6366f1">
-                <span class="ccl">pilih warna sendiri</span>
+                <span class="ccl" data-i18n="panel.custom">pilih warna sendiri</span>
             </div>
         </div>
     </div>
@@ -220,21 +273,22 @@
     <div class="view">
         <div class="page on" id="p-about">
             <div class="page-inner hero">
-                <p class="hero-g">hai, aku</p>
-                <h1 class="hero-t">anos,<br>nosan,<br><span class="ac">nsn.</span></h1>
-                <p class="hero-d">aku hanya seorang pemula atau seseorang yang suka sesuatu. yang aku suka ada coding, editing, minecraft redstone, dan command block.</p>
+                <p class="hero-g" data-i18n="about.greet">hai, aku</p>
+                <h1 class="hero-t" data-i18n="about.name">anos,<br>nosan,<br><span class="ac">nsn.</span></h1>
+                <p class="hero-d" data-i18n="about.desc">aku hanya seorang developer / programmer / modder yang suka coding, editing, minecraft redstone, dan command block.</p>
                 <div class="hero-a">
                     <a href="https://github.com/Philorganon" class="btn btn-p" target="_blank" rel="noopener"><i data-lucide="github" style="width:18px;height:18px"></i>GitHub</a>
-                    <button class="btn" onclick="goTo('projects')">Lihat Projects<i data-lucide="arrow-right" style="width:16px;height:16px"></i></button>
+                    <button class="btn" onclick="goTo('projects')"><span data-i18n="about.seeProjects">Lihat Projects</span><i data-lucide="arrow-right" style="width:16px;height:16px"></i></button>
                 </div>
                 <div class="tags">
-                    <span class="tag"><i data-lucide="code-2"></i>Coding</span>
-                    <span class="tag"><i data-lucide="film"></i>Editing</span>
-                    <span class="tag"><i data-lucide="box"></i>Redstone</span>
-                    <span class="tag"><i data-lucide="terminal-square"></i>Command Block</span>
+                    <span class="tag"><i data-lucide="code-2"></i><span data-i18n="tag.coding">Coding</span></span>
+                    <span class="tag"><i data-lucide="film"></i><span data-i18n="tag.editing">Editing</span></span>
+                    <span class="tag"><i data-lucide="box"></i><span data-i18n="tag.redstone">Redstone</span></span>
+                    <span class="tag"><i data-lucide="terminal-square"></i><span data-i18n="tag.cmdblock">Command Block</span></span>
+                    <span class="tag"><i data-lucide="bot"></i><span data-i18n="tag.modder">Modder</span></span>
                 </div>
                 <div class="footer">
-                    <div class="fl"><a href="https://github.com/" target="_blank" rel="noopener"><i data-lucide="github"></i>GitHub</a></div>
+                    <div class="fl"><a href="https://github.com/Philorganon" target="_blank" rel="noopener"><i data-lucide="github"></i>GitHub</a></div>
                     <p>© 2026 nsn.</p>
                 </div>
             </div>
@@ -242,16 +296,49 @@
 
         <div class="page" id="p-projects">
             <div class="page-inner">
-                <div class="st">Projects</div>
-                <div class="pg">
-                    <div class="card pc"><div class="pi"><i data-lucide="globe"></i></div><div class="pn">Website</div><div class="pd">Beberapa website static yang sudah aku buat.</div></div>
-                    <div class="card pc"><div class="pi"><i data-lucide="smartphone"></i></div><div class="pn">Aplikasi</div><div class="pd">Aplikasi sederhana yang aku buat untuk belajar.</div></div>
-                    <div class="card pc"><div class="pi"><i data-lucide="file-executable"></i></div><div class="pn">EXE</div><div class="pd">Program executable yang sudah aku compile sendiri.</div></div>
-                    <div class="card pc"><div class="pi"><i data-lucide="server"></i></div><div class="pn">MC Server</div><div class="pd">Server minecraft yang sudah aku setup dan konfigurasi.</div></div>
-                    <div class="card pc"><div class="pi"><i data-lucide="zap"></i></div><div class="pn">Redstone</div><div class="pd">Build redstone sederhana di minecraft.</div></div>
-                    <div class="card pc"><div class="pi"><i data-lucide="puzzle"></i></div><div class="pn">MC Mod</div><div class="pd">Mod minecraft sederhana yang sudah aku buat.</div></div>
-                    <div class="card pc"><div class="pi"><i data-lucide="gamepad-2"></i></div><div class="pn">SAMP Lua</div><div class="pd">Script lua untuk SA-MP server.</div></div>
-                    <div class="card pc"><div class="pi"><i data-lucide="scroll-text"></i></div><div class="pn">Script Lainnya</div><div class="pd">Berbagai script lainnya, lihat di GitHub ku.</div></div>
+                <div class="st"><span data-i18n="proj.title">Projects</span><span class="st-sub" data-i18n="proj.sub">Semua ada di GitHub-ku</span></div>
+
+                <div class="pcat">
+                    <div class="pcat-h"><i data-lucide="bot"></i><span data-i18n="proj.cat.bots">Bots &amp; Automation</span></div>
+                    <div class="pg">
+                        <div class="card pc"><div class="pi"><i data-lucide="message-square"></i></div><div class="pn" data-i18n="p.discordBot.n">Discord Bot</div><div class="pd" data-i18n="p.discordBot.d">Bot Discord multifungsi: moderasi, utilitas, dan fitur custom.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="workflow"></i></div><div class="pn" data-i18n="p.discordSelf.n">Discord Self-Bot / Automation</div><div class="pd" data-i18n="p.discordSelf.d">Automasi akun sendiri untuk keperluan personal & eksperimen.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="message-circle"></i></div><div class="pn" data-i18n="p.waBot.n">WhatsApp Bot</div><div class="pd" data-i18n="p.waBot.d">Bot WhatsApp untuk auto-reply, utilitas, dan integrasi lainnya.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="send"></i></div><div class="pn" data-i18n="p.tgBot.n">Telegram Bot</div><div class="pd" data-i18n="p.tgBot.d">Bot Telegram dengan berbagai command dan fitur custom.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="facebook"></i></div><div class="pn" data-i18n="p.fbBot.n">Facebook Bot</div><div class="pd" data-i18n="p.fbBot.d">Automasi & bot untuk Facebook Messenger / Page.</div></div>
+                    </div>
+                </div>
+
+                <div class="pcat">
+                    <div class="pcat-h"><i data-lucide="smartphone"></i><span data-i18n="proj.cat.mobile">Android & System</span></div>
+                    <div class="pg">
+                        <div class="card pc"><div class="pi"><i data-lucide="terminal"></i></div><div class="pn" data-i18n="p.termux.n">Termux Theme</div><div class="pd" data-i18n="p.termux.d">Tema custom untuk Termux, tampilan dan warna sesuai selera.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="settings-2"></i></div><div class="pn" data-i18n="p.magisk.n">Magisk Module Creator</div><div class="pd" data-i18n="p.magisk.d">Belajar bikin Magisk module dari nol (masih newbie).</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="music-4"></i></div><div class="pn">AXML Audio</div><div class="pd" data-i18n="p.axml.d">Eksperimen bikin musik lewat coding XML (AXML).</div></div>
+                    </div>
+                </div>
+
+                <div class="pcat">
+                    <div class="pcat-h"><i data-lucide="pickaxe"></i><span data-i18n="proj.cat.mc">Minecraft Mods</span></div>
+                    <div class="pg">
+                        <div class="card pc"><div class="pi"><i data-lucide="copy"></i></div><div class="pn" data-i18n="p.dupe.n">Dupe Detect</div><div class="pd" data-i18n="p.dupe.d">Mod untuk mendeteksi item duplication di server.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="rocket"></i></div><div class="pn" data-i18n="p.orbital.n">Orbital Strike Cannon</div><div class="pd" data-i18n="p.orbital.d">Mod senjata custom dengan efek serangan orbital.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="flame"></i></div><div class="pn" data-i18n="p.sulfur.n">Sulfur Boss</div><div class="pd" data-i18n="p.sulfur.d">Custom boss mob dengan mekanik dan attack pattern unik.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="trees"></i></div><div class="pn" data-i18n="p.tree.n">Tree Capitator + Vein Miner</div><div class="pd" data-i18n="p.tree.d">Tebang pohon & tambang vein sekaligus dalam satu klik.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="server"></i></div><div class="pn" data-i18n="p.mcserver.n">MC Server</div><div class="pd" data-i18n="p.mcserver.d">Server minecraft yang sudah aku setup dan konfigurasi.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="zap"></i></div><div class="pn" data-i18n="p.redstone.n">Redstone</div><div class="pd" data-i18n="p.redstone.d">Build redstone sederhana di minecraft.</div></div>
+                    </div>
+                </div>
+
+                <div class="pcat">
+                    <div class="pcat-h"><i data-lucide="code"></i><span data-i18n="proj.cat.other">Lainnya</span></div>
+                    <div class="pg">
+                        <div class="card pc"><div class="pi"><i data-lucide="globe"></i></div><div class="pn" data-i18n="p.web.n">Website</div><div class="pd" data-i18n="p.web.d">Beberapa website static yang sudah aku buat.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="smartphone"></i></div><div class="pn" data-i18n="p.app.n">Aplikasi</div><div class="pd" data-i18n="p.app.d">Aplikasi sederhana yang aku buat untuk belajar.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="file-cog"></i></div><div class="pn">EXE</div><div class="pd" data-i18n="p.exe.d">Program executable yang sudah aku compile sendiri.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="gamepad-2"></i></div><div class="pn">SAMP Lua</div><div class="pd" data-i18n="p.samp.d">Script lua untuk SA-MP server.</div></div>
+                        <div class="card pc"><div class="pi"><i data-lucide="scroll-text"></i></div><div class="pn" data-i18n="p.other.n">Script Lainnya</div><div class="pd" data-i18n="p.other.d">Berbagai script lainnya, lihat di GitHub ku.</div></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -267,7 +354,7 @@
                     <div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div><div class="mv-bar"></div>
                 </div>
                 <div class="card music-card">
-                    <div class="ml"><i data-lucide="music-2"></i>Lagu favorit</div>
+                    <div class="ml"><i data-lucide="music-2"></i><span data-i18n="music.label">Lagu favorit</span></div>
                     <div class="music-title">i love you so i can never let you go</div>
                     <div class="aw">
                         <audio controls preload="none" id="mAudio">
@@ -275,7 +362,7 @@
                             browser mu tidak support audio.
                         </audio>
                     </div>
-                    <p class="mn">tekan play untuk dengar lagu favorit ku.</p>
+                    <p class="mn" data-i18n="music.note">tekan play untuk dengar lagu favorit ku.</p>
                 </div>
             </div>
         </div>
@@ -286,7 +373,7 @@
                     <img src="https://fiup.vercel.app/f/1782226352974_oguri.jpg" alt="Oguri" class="oi">
                     <div class="ot">
                         <h3>Oguri Cap</h3>
-                        <p>aku menyukai karakter anime yang memiliki sedikit ekspresi seperti oguri cap.</p>
+                        <p data-i18n="fav.desc">aku menyukai karakter anime yang memiliki sedikit ekspresi seperti oguri cap.</p>
                     </div>
                 </div>
             </div>
@@ -296,6 +383,93 @@
     <div class="toast" id="toast"></div>
 
     <script>
+        /* ---------------- i18n ---------------- */
+        const I18N = {
+            id: {
+                'nav.about':'about','nav.projects':'projects','nav.music':'music','nav.favorite':'favorite',
+                'panel.lang':'Bahasa','panel.theme':'Tema','panel.accent':'Warna Aksen','panel.custom':'pilih warna sendiri',
+                'about.greet':'hai, aku',
+                'about.name':'anos,<br>nosan,<br><span class="ac">nsn.</span>',
+                'about.desc':'aku hanya seorang developer / programmer / modder yang suka coding, editing, minecraft redstone, dan command block.',
+                'about.seeProjects':'Lihat Projects',
+                'tag.coding':'Coding','tag.editing':'Editing','tag.redstone':'Redstone','tag.cmdblock':'Command Block','tag.modder':'Modder',
+                'proj.title':'Projects','proj.sub':'Semua ada di GitHub-ku',
+                'proj.cat.bots':'Bot & Automation','proj.cat.mobile':'Android & Sistem','proj.cat.mc':'Minecraft Mod','proj.cat.other':'Lainnya',
+                'p.discordBot.n':'Discord Bot','p.discordBot.d':'Bot Discord multifungsi: moderasi, utilitas, dan fitur custom.',
+                'p.discordSelf.n':'Discord Self-Bot / Automation','p.discordSelf.d':'Automasi akun sendiri untuk keperluan personal & eksperimen.',
+                'p.waBot.n':'WhatsApp Bot','p.waBot.d':'Bot WhatsApp untuk auto-reply, utilitas, dan integrasi lainnya.',
+                'p.tgBot.n':'Telegram Bot','p.tgBot.d':'Bot Telegram dengan berbagai command dan fitur custom.',
+                'p.fbBot.n':'Facebook Bot','p.fbBot.d':'Automasi & bot untuk Facebook Messenger / Page.',
+                'p.termux.n':'Termux Theme','p.termux.d':'Tema custom untuk Termux, tampilan dan warna sesuai selera.',
+                'p.magisk.n':'Magisk Module Creator','p.magisk.d':'Belajar bikin Magisk module dari nol (masih newbie).',
+                'p.axml.d':'Eksperimen bikin musik lewat coding XML (AXML).',
+                'p.dupe.n':'Dupe Detect','p.dupe.d':'Mod untuk mendeteksi item duplication di server.',
+                'p.orbital.n':'Orbital Strike Cannon','p.orbital.d':'Mod senjata custom dengan efek serangan orbital.',
+                'p.sulfur.n':'Sulfur Boss','p.sulfur.d':'Custom boss mob dengan mekanik dan attack pattern unik.',
+                'p.tree.n':'Tree Capitator + Vein Miner','p.tree.d':'Tebang pohon & tambang vein sekaligus dalam satu klik.',
+                'p.mcserver.n':'MC Server','p.mcserver.d':'Server minecraft yang sudah aku setup dan konfigurasi.',
+                'p.redstone.n':'Redstone','p.redstone.d':'Build redstone sederhana di minecraft.',
+                'p.web.n':'Website','p.web.d':'Beberapa website static yang sudah aku buat.',
+                'p.app.n':'Aplikasi','p.app.d':'Aplikasi sederhana yang aku buat untuk belajar.',
+                'p.exe.d':'Program executable yang sudah aku compile sendiri.',
+                'p.samp.d':'Script lua untuk SA-MP server.',
+                'p.other.n':'Script Lainnya','p.other.d':'Berbagai script lainnya, lihat di GitHub ku.',
+                'music.label':'Lagu favorit','music.note':'tekan play untuk dengar lagu favorit ku.',
+                'fav.desc':'aku menyukai karakter anime yang memiliki sedikit ekspresi seperti oguri cap.'
+            },
+            en: {
+                'nav.about':'about','nav.projects':'projects','nav.music':'music','nav.favorite':'favorite',
+                'panel.lang':'Language','panel.theme':'Theme','panel.accent':'Accent Color','panel.custom':'pick your own color',
+                'about.greet':"hi, i'm",
+                'about.name':'anos,<br>nosan,<br><span class="ac">nsn.</span>',
+                'about.desc':"just a developer / programmer / modder who enjoys coding, editing, minecraft redstone, and command blocks.",
+                'about.seeProjects':'View Projects',
+                'tag.coding':'Coding','tag.editing':'Editing','tag.redstone':'Redstone','tag.cmdblock':'Command Block','tag.modder':'Modder',
+                'proj.title':'Projects','proj.sub':'All on my GitHub',
+                'proj.cat.bots':'Bots & Automation','proj.cat.mobile':'Android & System','proj.cat.mc':'Minecraft Mods','proj.cat.other':'Others',
+                'p.discordBot.n':'Discord Bot','p.discordBot.d':'Multi-purpose Discord bot: moderation, utilities, and custom features.',
+                'p.discordSelf.n':'Discord Self-Bot / Automation','p.discordSelf.d':'Personal account automation for experiments and personal use.',
+                'p.waBot.n':'WhatsApp Bot','p.waBot.d':'WhatsApp bot for auto-reply, utilities, and other integrations.',
+                'p.tgBot.n':'Telegram Bot','p.tgBot.d':'Telegram bot with various commands and custom features.',
+                'p.fbBot.n':'Facebook Bot','p.fbBot.d':'Automation & bot for Facebook Messenger / Page.',
+                'p.termux.n':'Termux Theme','p.termux.d':'Custom Termux theme, styled to taste.',
+                'p.magisk.n':'Magisk Module Creator','p.magisk.d':'Learning to build Magisk modules from scratch (still a newbie).',
+                'p.axml.d':'Experimenting with making music through XML coding (AXML).',
+                'p.dupe.n':'Dupe Detect','p.dupe.d':'Mod to detect item duplication on servers.',
+                'p.orbital.n':'Orbital Strike Cannon','p.orbital.d':'Custom weapon mod with orbital strike effects.',
+                'p.sulfur.n':'Sulfur Boss','p.sulfur.d':'Custom boss mob with unique mechanics and attack patterns.',
+                'p.tree.n':'Tree Capitator + Vein Miner','p.tree.d':'Chop trees & mine veins at once with a single click.',
+                'p.mcserver.n':'MC Server','p.mcserver.d':'Minecraft server I set up and configured myself.',
+                'p.redstone.n':'Redstone','p.redstone.d':'Simple redstone builds in minecraft.',
+                'p.web.n':'Website','p.web.d':'A few static websites I have built.',
+                'p.app.n':'App','p.app.d':'Simple apps I built for learning purposes.',
+                'p.exe.d':'Executable programs I compiled myself.',
+                'p.samp.d':'Lua scripts for SA-MP servers.',
+                'p.other.n':'Other Scripts','p.other.d':'Various other scripts, check my GitHub.',
+                'music.label':'Favorite song','music.note':'press play to hear my favorite song.',
+                'fav.desc':'I like anime characters with a subtle, understated expression like Oguri Cap.'
+            }
+        };
+
+        let currentLang = 'id';
+
+        function detectLang(){
+            const nav = (navigator.language || navigator.userLanguage || 'id').toLowerCase();
+            return nav.startsWith('id') ? 'id' : 'en';
+        }
+
+        function applyLang(lang){
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            const dict = I18N[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el=>{
+                const key = el.getAttribute('data-i18n');
+                if(dict[key] !== undefined) el.innerHTML = dict[key];
+            });
+            document.querySelectorAll('.lang-sw .to').forEach(b=>b.classList.toggle('on', b.dataset.lang===lang));
+        }
+
+        /* ---------------- Theme / Accent ---------------- */
         const colors=['#6366f1','#8b5cf6','#a855f7','#ec4899','#f43f5e','#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#06b6d4','#3b82f6'];
         const cGrid=document.getElementById('cGrid'),cCustom=document.getElementById('cCustom'),sBtn=document.getElementById('sBtn'),pnl=document.getElementById('pnl'),ov=document.getElementById('ov'),toast=document.getElementById('toast'),root=document.documentElement;
         const tabs=document.querySelectorAll('.tab-b'),pages=document.querySelectorAll('.page');
@@ -326,9 +500,16 @@
         sBtn.addEventListener('click',e=>{e.stopPropagation();pnl.classList.toggle('on');ov.classList.toggle('on')});
         ov.addEventListener('click',()=>{pnl.classList.remove('on');ov.classList.remove('on')});
 
-        document.querySelectorAll('.to').forEach(b=>{b.addEventListener('click',()=>{
-            document.querySelectorAll('.to').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-            document.body.className=b.dataset.t;showToast(b.dataset.t==='sb'?'Soft Brutalism':'Simple Web')
+        document.querySelectorAll('.to[data-t]').forEach(b=>{b.addEventListener('click',()=>{
+            document.querySelectorAll('.to[data-t]').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+            document.body.className=b.dataset.t;
+            const names={sb:'Soft Brutalism',sw:'Simple',dg:'Dark Glass',tm:'Terminal'};
+            showToast(names[b.dataset.t]);
+        })});
+
+        document.querySelectorAll('.lang-sw .to').forEach(b=>{b.addEventListener('click',()=>{
+            applyLang(b.dataset.lang);
+            showToast(b.dataset.lang==='id' ? 'Bahasa Indonesia' : 'English');
         })});
 
         let tt;function showToast(m){toast.textContent=m;toast.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove('show'),1500)}
@@ -342,6 +523,8 @@
             mAudio.addEventListener('ended',()=>mBars.forEach(b=>{b.classList.remove('playing');b.classList.add('paused')}));
         }
 
+        /* init: auto-detect system language on first load */
+        applyLang(detectLang());
         lucide.createIcons();
     </script>
 </body>
