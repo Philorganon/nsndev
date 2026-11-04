@@ -1,446 +1,1474 @@
 <!doctype html>
-<html lang="id" data-theme="brutalism" data-lang="id">
+<html lang="en" data-lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Portfolio nsn.">
-  <title data-i18n="meta.title">nsn.</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>nsn. — Night Gallery</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%230a0e1a'/%3E%3Cstop offset='1' stop-color='%232a2418'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' fill='url(%23s)'/%3E%3Ccircle cx='44' cy='20' r='8' fill='%23f0ead8' opacity='0.9'/%3E%3Ccircle cx='41' cy='18' r='8' fill='%230a0e1a'/%3E%3Ctext x='32' y='46' font-family='Georgia,serif' font-style='italic' font-size='28' text-anchor='middle' fill='%23f0ead8'%3En.%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script type="importmap">{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }</script>
+<script>
+  // Load language before render to avoid flash
+  (function() {
+    try {
+      var l = localStorage.getItem('nsn.lang');
+      if (l === 'id' || l === 'en') {
+        document.documentElement.setAttribute('data-lang', l);
+        document.documentElement.setAttribute('lang', l);
+      }
+    } catch (e) {}
+  })();
+</script>
+<style>
+:root {
+  --night-deep: #05050f;
+  --moon: #faf6ea;
+  --moon-dim: #e0d8c0;
+  --cream: #faf5ec;
+  --ivory: #f5efe2;
+  --ink: #f0ead8;
+  --ink-soft: #c8bfa8;
+  --ink-faint: #a09580;
+  --amber: #ffb866;
+  --amber-deep: #e89050;
+  --bronze: #a88356;
+  --bronze-deep: #7a5a34;
 
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230A0A0A'/%3E%3Ctext x='30' y='47' font-family='Arial Black,Helvetica,sans-serif' font-size='42' font-weight='900' text-anchor='middle' fill='%23FFFFFF'%3En.%3C/text%3E%3C/svg%3E">
+  --serif: 'Instrument Serif', Georgia, serif;
+  --sans: 'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  <script>
-    (function () {
-      try {
-        var t = localStorage.getItem('nsn.theme');
-        if (['brutalism','simple','darkglass','terminal'].indexOf(t) > -1) {
-          document.documentElement.setAttribute('data-theme', t);
-        }
-        var a = localStorage.getItem('nsn.accent');
-        if (/^#[0-9a-f]{6}$/i.test(a)) {
-          document.documentElement.style.setProperty('--accent', a);
-        }
-      } catch (e) {}
-    })();
-  </script>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  background: var(--night-deep);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 19px;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+body { cursor: none; }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+#c { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1; display: block; }
+
+#grain {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 2; opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+#vignette {
+  position: fixed; inset: 0; pointer-events: none; z-index: 2;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(5,5,15,0.6) 100%);
+}
+
+#loading {
+  position: fixed; inset: 0; background: var(--night-deep);
+  z-index: 100; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1.75rem;
+  transition: opacity 0.8s var(--ease);
+}
+#loading.hidden { opacity: 0; pointer-events: none; }
+.load-brand { font-family: var(--serif); font-style: italic; font-size: 3rem; color: var(--moon); }
+.load-bar { width: 200px; height: 2px; background: rgba(240,234,216,0.15); overflow: hidden; border-radius: 2px; }
+.load-bar i { display: block; height: 100%; width: 0; background: var(--amber); animation: loadFill 1.2s var(--ease) forwards; }
+@keyframes loadFill { to { width: 100%; } }
+
+#hud {
+  position: fixed; inset: 0; pointer-events: none; z-index: 10;
+  padding: 2rem 2.5rem; font-family: var(--mono);
+  font-size: 0.95rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--moon-dim); text-shadow: 0 2px 10px rgba(0,0,0,0.95);
+}
+.hud-tl { position: absolute; top: 2rem; left: 2.5rem; }
+.hud-brand {
+  font-family: var(--serif); font-style: italic; font-size: 2rem;
+  color: var(--moon); text-transform: none; margin-bottom: 0.4rem;
+}
+.hud-tl-line { color: var(--ink-faint); line-height: 1.5; font-size: 0.9rem; }
+.hud-tl-line strong { color: var(--moon); font-weight: 700; }
+
+.hud-tr {
+  position: absolute; top: 2rem; right: 2.5rem;
+  text-align: right; line-height: 1.7; font-size: 0.9rem;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem;
+}
+.hud-tr strong { color: var(--moon); font-weight: 700; }
+
+/* Language switcher */
+.lang-switch {
+  display: inline-flex;
+  gap: 0;
+  padding: 3px;
+  background: rgba(5,5,15,0.7);
+  border: 1px solid rgba(240,234,216,0.2);
+  border-radius: 100px;
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.lang-switch button {
+  padding: 0.35rem 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  background: transparent;
+  border: 0;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+  text-shadow: none;
+}
+.lang-switch button:hover { color: var(--moon-dim); }
+.lang-switch button.active {
+  background: var(--amber);
+  color: var(--night-deep);
+}
+
+.hud-br {
+  position: absolute; bottom: 2rem; right: 2.5rem;
+  display: flex; flex-direction: column; gap: 0.6rem;
+  align-items: flex-end; font-size: 0.9rem;
+}
+.hud-progress { display: flex; gap: 0.4rem; }
+.hud-dot {
+  width: 4px; height: 16px; background: rgba(240,234,216,0.22);
+  border-radius: 2px; transition: background 0.4s var(--ease), height 0.4s var(--ease);
+}
+.hud-dot.active { background: var(--amber); height: 24px; }
+.hud-dot.near { background: rgba(240,234,216,0.55); }
+.hud-pct { font-weight: 700; color: var(--moon); font-size: 1rem; }
+
+.hud-hint {
+  position: absolute; bottom: 2rem; left: 50%;
+  transform: translateX(-50%); text-align: center;
+  transition: opacity 0.6s var(--ease);
+}
+.hud-hint.hidden { opacity: 0; }
+.hud-hint span {
+  display: block; animation: hintBounce 2.4s var(--ease) infinite;
+  font-size: 0.85rem; letter-spacing: 0.22em; color: var(--moon-dim); font-weight: 700;
+}
+@keyframes hintBounce { 0%, 100% { transform: translateY(0); opacity: 0.6; } 50% { transform: translateY(4px); opacity: 1; } }
+
+#cursor {
+  position: fixed; width: 12px; height: 12px; background: var(--moon);
+  border-radius: 50%; pointer-events: none; z-index: 200;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s var(--ease), height 0.3s var(--ease), background 0.3s var(--ease);
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+#cursor.hover { width: 64px; height: 64px; background: var(--amber); }
+
+#modal-backdrop {
+  position: fixed; inset: 0; background: rgba(5,5,15,0.78);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  z-index: 50; display: flex; align-items: center; justify-content: center;
+  padding: 2rem; opacity: 0; pointer-events: none; transition: opacity 0.4s var(--ease);
+}
+#modal-backdrop.active { opacity: 1; pointer-events: auto; }
+
+#modal {
+  background: var(--cream); max-width: 880px; width: 100%;
+  max-height: 90vh; overflow-y: auto; padding: 3.5rem;
+  transform: translateY(24px) scale(0.97); transition: transform 0.5s var(--ease);
+  position: relative;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 100px rgba(232,160,79,0.2);
+  cursor: auto; color: #1a1712; border-radius: 4px;
+}
+#modal-backdrop.active #modal { transform: translateY(0) scale(1); }
+
+.modal-close {
+  position: absolute; top: 1.25rem; right: 1.25rem;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: transparent; border: 2px solid rgba(26,23,18,0.28);
+  color: #1a1712; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; transition: all 0.25s var(--ease);
+  font-family: var(--mono); font-size: 1.1rem; font-weight: 700;
+}
+.modal-close:hover { background: #1a1712; color: var(--cream); }
+
+.modal-cat {
+  font-family: var(--mono); font-size: 0.95rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--bronze-deep);
+  margin-bottom: 1rem; font-weight: 700;
+}
+.modal-title {
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(2.5rem, 5vw, 3.5rem); line-height: 1;
+  letter-spacing: -0.025em; margin-bottom: 1.75rem; color: #0f0d0a;
+}
+.modal-body { font-size: 1.2rem; line-height: 1.75; color: #2a2218; margin-bottom: 1.5rem; }
+.modal-body p { margin-bottom: 1rem; }
+.modal-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
+.modal-tags span {
+  font-family: var(--mono); font-size: 0.9rem; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 0.55rem 1.1rem;
+  border: 2px solid rgba(26,23,18,0.22); border-radius: 100px;
+  color: #2a2218; font-weight: 500;
+}
+.modal-cta {
+  display: inline-flex; align-items: center; gap: 0.85rem;
+  font-family: var(--mono); font-size: 1rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: #1a1712; text-decoration: none;
+  padding: 1.1rem 2rem; border: 2px solid #1a1712; border-radius: 100px;
+  transition: all 0.25s var(--ease); margin-top: 1.75rem; font-weight: 700;
+}
+.modal-cta:hover { background: #1a1712; color: var(--cream); }
+
+.modal-list { border-top: 2px solid rgba(26,23,18,0.15); }
+.modal-item {
+  display: grid; grid-template-columns: 70px 1fr auto; align-items: center;
+  gap: 1.4rem; padding: 1.5rem 0; border-bottom: 1px solid rgba(26,23,18,0.12);
+  text-decoration: none; color: inherit; transition: background 0.2s var(--ease); border-radius: 4px;
+}
+.modal-item:hover { background: rgba(139,111,71,0.06); padding-left: 1rem; padding-right: 1rem; }
+.modal-item-num { font-family: var(--mono); font-size: 1rem; color: var(--bronze-deep); font-weight: 700; }
+.modal-item-name {
+  font-family: var(--serif); font-style: italic; font-size: 1.7rem;
+  color: #0f0d0a; letter-spacing: -0.02em; display: block; margin-bottom: 0.25rem;
+}
+.modal-item-desc { font-size: 1rem; color: #2a2218; line-height: 1.5; }
+.modal-item-arrow { font-family: var(--mono); font-size: 1.5rem; color: #7a6a52; transition: all 0.25s var(--ease); font-weight: 700; }
+.modal-item:hover .modal-item-arrow { color: var(--bronze-deep); transform: translateX(6px); }
+
+.modal-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 1rem; }
+.modal-gallery figure { display: flex; flex-direction: column; gap: 0.75rem; }
+.modal-gallery img {
+  width: 100%; aspect-ratio: 3/4; object-fit: cover; background: var(--ivory);
+  filter: saturate(0.98) contrast(1.02); border-radius: 4px;
+}
+.modal-gallery figcaption {
+  font-family: var(--serif); font-style: italic; font-size: 1.4rem;
+  color: #0f0d0a; letter-spacing: -0.02em;
+}
+.modal-gallery figcaption small {
+  display: block; font-family: var(--mono); font-style: normal;
+  font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--bronze-deep); margin-bottom: 0.2rem; font-weight: 700;
+}
+
+.modal-audio { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1rem; padding: 1.75rem; background: var(--ivory); border: 2px solid rgba(26,23,18,0.12); border-radius: 4px; }
+.modal-audio-title { font-family: var(--serif); font-style: italic; font-size: 1.8rem; color: #0f0d0a; letter-spacing: -0.02em; line-height: 1.2; }
+.modal-audio audio { width: 100%; height: 54px; filter: invert(0.88) hue-rotate(180deg); }
+
+@media (max-width: 900px) {
+  html, body { font-size: 17px; }
+  #hud { padding: 1.5rem 1.5rem; font-size: 0.85rem; }
+  .hud-tl { top: 1.5rem; left: 1.5rem; }
+  .hud-brand { font-size: 1.75rem; }
+  .hud-tl-line { font-size: 0.8rem; }
+  .hud-tl-line:last-child { display: none; }
+  .hud-tr { top: 1.5rem; right: 1.5rem; font-size: 0.8rem; }
+  .hud-tr .hud-tr-state { display: none; }
+  .lang-switch button { padding: 0.3rem 0.7rem; font-size: 0.7rem; }
+  .hud-br { bottom: 1.5rem; right: 1.5rem; font-size: 0.8rem; }
+  .hud-pct { display: none; }
+  .hud-hint { bottom: 1.5rem; font-size: 0.8rem; }
+  #modal { padding: 2.25rem 1.5rem; }
+  .modal-title { font-size: 2.2rem; }
+  .modal-body { font-size: 1.1rem; }
+  .modal-item-name { font-size: 1.4rem; }
+  .modal-item { grid-template-columns: 50px 1fr auto; gap: 1rem; padding: 1.25rem 0; }
+  .modal-gallery { grid-template-columns: 1fr; }
+  .modal-gallery figure { flex-direction: row; align-items: center; gap: 1rem; }
+  .modal-gallery img { width: 120px; height: auto; }
+  .modal-audio { padding: 1.25rem; }
+  .modal-audio-title { font-size: 1.5rem; }
+}
+
+@media (max-width: 500px) {
+  html, body { font-size: 16px; }
+  #hud { padding: 1.25rem 1.25rem; }
+  .hud-tl { top: 1.25rem; left: 1.25rem; }
+  .hud-brand { font-size: 1.5rem; }
+  .hud-tr { top: 1.25rem; right: 1.25rem; font-size: 0.75rem; }
+  .hud-tr .hud-frame-line { display: none; }
+  .lang-switch button { padding: 0.28rem 0.6rem; font-size: 0.65rem; }
+  .hud-br { bottom: 1.25rem; right: 1.25rem; }
+  .hud-hint { bottom: 1.25rem; font-size: 0.75rem; }
+  #modal { padding: 2rem 1.25rem; }
+  .modal-title { font-size: 1.9rem; }
+  .modal-close { top: 0.9rem; right: 0.9rem; width: 42px; height: 42px; }
+  .modal-item { grid-template-columns: 44px 1fr auto; gap: 0.8rem; }
+  .modal-item-name { font-size: 1.25rem; }
+  .modal-item-desc { font-size: 0.9rem; }
+  .modal-gallery img { width: 100px; }
+  .modal-gallery figcaption { font-size: 1.15rem; }
+  .modal-audio-title { font-size: 1.3rem; }
+  .modal-tags span { font-size: 0.8rem; padding: 0.5rem 0.9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
 </head>
 <body>
-  <div class="loader" id="loader" aria-hidden="true">
-    <div class="loader-inner">
-      <span class="loader-brand">nsn.</span>
-      <div class="loader-bar"><i></i></div>
-    </div>
+
+<canvas id="c"></canvas>
+<div id="vignette"></div>
+<div id="grain"></div>
+
+<div id="loading">
+  <div class="load-brand">nsn.</div>
+  <div class="load-bar"><i></i></div>
+</div>
+
+<div id="hud">
+  <div class="hud-tl">
+    <div class="hud-brand">nsn.</div>
+    <div class="hud-tl-line"><strong id="hudSubtitle">NIGHT GALLERY</strong> / 2026</div>
   </div>
-
-  <div class="scroll-progress" aria-hidden="true"><i id="scroll-bar"></i></div>
-  <div class="bg-aura" aria-hidden="true"></div>
-  <div class="bg-grid" aria-hidden="true"></div>
-
-  <a class="skip-link" href="#main" data-i18n="skip">Lewati ke konten</a>
-
-  <header class="site-header">
-    <a class="brand" href="#about" aria-label="nsn.">nsn.</a>
-
-    <nav class="site-nav" aria-label="Primary">
-      <a href="#about" data-i18n="nav.about">about</a>
-      <a href="#projects" data-i18n="nav.projects">projects</a>
-      <a href="#music" data-i18n="nav.music">music</a>
-      <a href="#favorite" data-i18n="nav.favorite">favorite</a>
-    </nav>
-
-    <button class="settings-trigger" id="open-settings" type="button" aria-haspopup="dialog" aria-controls="settings-dialog" data-i18n-aria="settings.open" aria-label="Buka pengaturan">
-      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-        <path d="M4 7h9M18 7h2M4 17h2M10 17h10"/>
-        <circle cx="15.5" cy="7" r="2.1"/>
-        <circle cx="8.5" cy="17" r="2.1"/>
-      </svg>
-      <span class="settings-trigger__label" data-i18n="settings.kicker">PENGATURAN</span>
-    </button>
-  </header>
-
-  <main id="main">
-    <!-- ABOUT / HERO -->
-    <section class="section hero" id="about" aria-labelledby="hero-title">
-      <div class="hero-meta mono">
-        <span>PORTFOLIO / 2026</span>
-        <span>ID — EN</span>
-      </div>
-
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <p class="hero-kicker mono" data-i18n="hero.kicker">hai, aku</p>
-
-          <h1 class="display" id="hero-title">
-            <span class="line" data-split data-i18n="hero.name1">anos,</span>
-            <span class="line line--outline" data-split data-i18n="hero.name2">nosan,</span>
-            <span class="line line--accent" data-split data-i18n="hero.name3">nsn.</span>
-          </h1>
-
-          <p class="hero-desc" data-i18n="hero.desc">aku hanya seorang developer / programmer / modder yang suka coding, editing, minecraft redstone, dan command block.</p>
-
-          <div class="hero-actions">
-            <a class="btn btn--primary btn--magnetic" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer">
-              <span data-i18n="hero.github">GitHub</span>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
-            </a>
-            <a class="btn btn--ghost btn--magnetic" href="#projects" data-i18n="hero.projects">Lihat Projects</a>
-          </div>
-
-          <a class="github-line mono" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer">
-            <span>GitHub:</span>
-            <span class="github-url">https://github.com/Philorganon</span>
-          </a>
-
-          <ul class="tag-list" aria-label="Skills">
-            <li data-i18n="tag.coding">Coding</li>
-            <li data-i18n="tag.editing">Editing</li>
-            <li data-i18n="tag.redstone">Redstone</li>
-            <li data-i18n="tag.command">Command Block</li>
-            <li data-i18n="tag.modder">Modder</li>
-          </ul>
-        </div>
-
-    </section>
-
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <div class="marquee-group">
-          <span>CODING</span><span class="sep">/</span>
-          <span>EDITING</span><span class="sep">/</span>
-          <span>REDSTONE</span><span class="sep">/</span>
-          <span>COMMAND BLOCK</span><span class="sep">/</span>
-          <span>MODDER</span><span class="sep">/</span>
-          <span>CODING</span><span class="sep">/</span>
-          <span>EDITING</span><span class="sep">/</span>
-          <span>REDSTONE</span><span class="sep">/</span>
-          <span>COMMAND BLOCK</span><span class="sep">/</span>
-          <span>MODDER</span><span class="sep">/</span>
-        </div>
-        <div class="marquee-group" aria-hidden="true">
-          <span>CODING</span><span class="sep">/</span>
-          <span>EDITING</span><span class="sep">/</span>
-          <span>REDSTONE</span><span class="sep">/</span>
-          <span>COMMAND BLOCK</span><span class="sep">/</span>
-          <span>MODDER</span><span class="sep">/</span>
-          <span>CODING</span><span class="sep">/</span>
-          <span>EDITING</span><span class="sep">/</span>
-          <span>REDSTONE</span><span class="sep">/</span>
-          <span>COMMAND BLOCK</span><span class="sep">/</span>
-          <span>MODDER</span><span class="sep">/</span>
-        </div>
-      </div>
+  <div class="hud-tr">
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" data-set-lang="en" class="active">EN</button>
+      <button type="button" data-set-lang="id">ID</button>
     </div>
+    <div class="hud-frame-line">FRAME <strong id="hud-frame">01</strong> / 06</div>
+    <div class="hud-tr-state">STATE · <strong id="hud-state">FLOATING</strong></div>
+  </div>
+  <div class="hud-br">
+    <div class="hud-progress" id="hud-progress"></div>
+    <div class="hud-pct" id="hud-pct">000%</div>
+  </div>
+  <div class="hud-hint" id="hud-hint">
+    <span id="hudHintText">SCROLL TO DRIFT</span>
+  </div>
+</div>
 
-    <!-- PROJECTS -->
-    <section class="section projects" id="projects" aria-labelledby="projects-title">
-      <header class="section-head">
-        <span class="section-index" aria-hidden="true">02</span>
-        <h2 class="section-title" id="projects-title" data-split data-i18n="projects.title">Projects</h2>
-        <p class="section-sub mono" data-i18n="projects.sub">Semua ada di GitHub-ku</p>
-      </header>
+<div id="cursor"></div>
 
-      <div class="project-groups">
-        <section class="project-group" aria-labelledby="group-bots">
-          <div class="group-head">
-            <h3 class="group-title" id="group-bots"><span class="bracket">[</span> <span data-i18n="group.bots">Bots &amp; Automation</span> <span class="bracket">]</span></h3>
-            <span class="group-count mono">04</span>
-          </div>
+<div id="modal-backdrop">
+  <div id="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
 
-          <div class="project-grid">
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">01</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.discord.title">Discord Bot</h4>
-              <p data-i18n="proj.discord.desc">Bot Discord multifungsi: moderasi, utilitas, dan fitur custom.</p>
-              <div class="card-foot"><span class="pill">BOT</span><span class="mono">GITHUB</span></div>
-            </a>
+<main style="height: 720vh;"></main>
 
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">02</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.selfbot.title">Discord Self-Bot / Automation</h4>
-              <p data-i18n="proj.selfbot.desc">Automasi akun sendiri untuk keperluan personal &amp; eksperimen.</p>
-              <div class="card-foot"><span class="pill">BOT</span><span class="mono">GITHUB</span></div>
-            </a>
+<script type="module">
+import * as THREE from 'three';
 
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">03</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.telegram.title">Telegram Bot</h4>
-              <p data-i18n="proj.telegram.desc">Bot Telegram dengan berbagai command dan fitur custom.</p>
-              <div class="card-foot"><span class="pill">BOT</span><span class="mono">GITHUB</span></div>
-            </a>
+const isMobile = window.matchMedia('(max-width: 900px)').matches;
+const DPR_CAP = isMobile ? 1.6 : 2;
+const DUST_COUNT = isMobile ? 350 : 700;
 
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">04</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.facebook.title">Facebook Bot</h4>
-              <p data-i18n="proj.facebook.desc">Automasi &amp; bot untuk Facebook Messenger / Page.</p>
-              <div class="card-foot"><span class="pill">BOT</span><span class="mono">GITHUB</span></div>
-            </a>
-          </div>
-        </section>
+/* ============================================================
+   i18n
+   ============================================================ */
+const I18N = {
+  en: {
+    subtitle: 'NIGHT GALLERY',
+    hint: 'SCROLL TO DRIFT',
+    frame: 'FRAME',
+    state: 'STATE',
+    stateDrifting: 'DRIFTING',
+    stateInspect: 'INSPECT',
+    stateFloating: 'FLOATING',
+    clickOpen: 'CLICK TO OPEN →',
+    clickPlay: 'CLICK TO PLAY →',
+    clickView: 'CLICK TO VIEW →',
+    entries: 'ENTRIES',
+    track: 'TRACK 01',
+    subjects: 'SUBJECTS',
+    // Frame labels
+    aboutCat: 'ABOUT · 01',
+    projectsCat1: 'PROJECTS · 02',
+    projectsCat2: 'PROJECTS · 03',
+    projectsCat3: 'PROJECTS · 04',
+    musicCat: 'MUSIC · 05',
+    charactersCat: 'CHARACTERS · 06',
+    projectsLabel1: 'Bots & Automation',
+    projectsLabel2: 'Minecraft & Media',
+    projectsLabel3: 'Web & Utilities',
+    musicTitle: 'Listening',
+    charactersTitle: 'Faces',
+    // Content
+    aboutDesc: 'I am a developer / programmer / modder who loves coding, editing, Minecraft redstone, and command blocks.',
+    tags: ['Coding', 'Editing', 'Redstone', 'Command Block', 'Modder'],
+    // Projects
+    projects: [
+      { num: '01', name: 'Discord Bot', desc: 'Moderation, utility, custom features' },
+      { num: '02', name: 'Discord Self-Bot', desc: 'Personal account automation' },
+      { num: '03', name: 'Telegram Bot', desc: 'Custom command engine' },
+      { num: '04', name: 'Facebook Bot', desc: 'Messenger / Page automation' },
+      { num: '05', name: 'MC Server', desc: 'Server setup & configuration' },
+      { num: '06', name: 'Redstone', desc: 'Simple redstone builds' },
+      { num: '07', name: 'AXML Audio', desc: 'Music via XML coding' },
+      { num: '08', name: 'Termux Theme', desc: 'Custom Termux theme' },
+      { num: '09', name: 'Website', desc: 'Static websites' },
+      { num: '10', name: 'Aplikasi', desc: 'Applications for learning' },
+      { num: '11', name: 'EXE', desc: 'Self-compiled programs' },
+      { num: '12', name: 'SAMP Lua', desc: 'SA-MP server scripts' },
+      { num: '13', name: 'Script Lainnya', desc: 'Various scripts on GitHub' }
+    ],
+    // Characters meta
+    charMeta1: '01 / MAIN',
+    charMeta2: '02 / RYO',
+    charMeta3: '03 / NATSU',
+    // Modal
+    modalAboutCat: 'About',
+    modalAboutTitle: 'anos, nosan, nsn.',
+    modalGithub: 'Visit GitHub',
+    modalAllProjectsCat: 'All Projects · 13',
+    modalAllProjectsTitle: 'Projects',
+    modalMusicCat: 'Music',
+    modalMusicTitle: 'Favorite track',
+    modalMusicDesc: 'press play to listen to my favorite track.',
+    modalCharactersCat: 'Characters · 03',
+    modalCharactersTitle: 'Characters'
+  },
+  id: {
+    subtitle: 'GALERI MALAM',
+    hint: 'SCROLL UNTUK MENJELAJAH',
+    frame: 'BINGKAI',
+    state: 'STATUS',
+    stateDrifting: 'BERGERAK',
+    stateInspect: 'MEMERIKSA',
+    stateFloating: 'MELAYANG',
+    clickOpen: 'KLIK UNTUK BUKA →',
+    clickPlay: 'KLIK UNTUK PUTAR →',
+    clickView: 'KLIK UNTUK LIHAT →',
+    entries: 'ITEM',
+    track: 'LAGU 01',
+    subjects: 'SUBJEK',
+    aboutCat: 'TENTANG · 01',
+    projectsCat1: 'PROYEK · 02',
+    projectsCat2: 'PROYEK · 03',
+    projectsCat3: 'PROYEK · 04',
+    musicCat: 'MUSIK · 05',
+    charactersCat: 'KARAKTER · 06',
+    projectsLabel1: 'Bot & Otomasi',
+    projectsLabel2: 'Minecraft & Media',
+    projectsLabel3: 'Web & Utilitas',
+    musicTitle: 'Mendengarkan',
+    charactersTitle: 'Wajah',
+    aboutDesc: 'aku hanya seorang developer / programmer / modder yang suka coding, editing, minecraft redstone, dan command block.',
+    tags: ['Coding', 'Editing', 'Redstone', 'Command Block', 'Modder'],
+    projects: [
+      { num: '01', name: 'Discord Bot', desc: 'Moderasi, utilitas, fitur custom' },
+      { num: '02', name: 'Discord Self-Bot', desc: 'Automasi akun personal' },
+      { num: '03', name: 'Telegram Bot', desc: 'Command + fitur custom' },
+      { num: '04', name: 'Facebook Bot', desc: 'Automasi Messenger / Page' },
+      { num: '05', name: 'MC Server', desc: 'Server setup & konfigurasi' },
+      { num: '06', name: 'Redstone', desc: 'Build redstone sederhana' },
+      { num: '07', name: 'AXML Audio', desc: 'Musik via XML' },
+      { num: '08', name: 'Termux Theme', desc: 'Tema custom Termux' },
+      { num: '09', name: 'Website', desc: 'Static website' },
+      { num: '10', name: 'Aplikasi', desc: 'Aplikasi untuk belajar' },
+      { num: '11', name: 'EXE', desc: 'Program compiled sendiri' },
+      { num: '12', name: 'SAMP Lua', desc: 'Script SA-MP server' },
+      { num: '13', name: 'Script Lainnya', desc: 'Berbagai script di GitHub' }
+    ],
+    charMeta1: '01 / UTAMA',
+    charMeta2: '02 / RYO',
+    charMeta3: '03 / NATSU',
+    modalAboutCat: 'Tentang',
+    modalAboutTitle: 'anos, nosan, nsn.',
+    modalGithub: 'Kunjungi GitHub',
+    modalAllProjectsCat: 'Semua Proyek · 13',
+    modalAllProjectsTitle: 'Proyek',
+    modalMusicCat: 'Musik',
+    modalMusicTitle: 'Lagu favorit',
+    modalMusicDesc: 'tekan play untuk mendengarkan track favorit.',
+    modalCharactersCat: 'Karakter · 03',
+    modalCharactersTitle: 'Karakter'
+  }
+};
 
-        <section class="project-group" aria-labelledby="group-minecraft">
-          <div class="group-head">
-            <h3 class="group-title" id="group-minecraft"><span class="bracket">[</span> <span data-i18n="group.minecraft">Minecraft</span> <span class="bracket">]</span></h3>
-            <span class="group-count mono">02</span>
-          </div>
+let currentLang = 'en';
+try {
+  const stored = localStorage.getItem('nsn.lang');
+  if (stored === 'id' || stored === 'en') currentLang = stored;
+} catch (e) {}
 
-          <div class="project-grid">
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">05</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.server.title">MC Server</h4>
-              <p data-i18n="proj.server.desc">Server minecraft yang sudah aku setup dan konfigurasi.</p>
-              <div class="card-foot"><span class="pill">MOD</span><span class="mono">GITHUB</span></div>
-            </a>
+function t(key) {
+  return I18N[currentLang][key];
+}
 
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">06</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.redstone.title">Redstone</h4>
-              <p data-i18n="proj.redstone.desc">Build redstone sederhana di minecraft.</p>
-              <div class="card-foot"><span class="pill">MOD</span><span class="mono">GITHUB</span></div>
-            </a>
-          </div>
-        </section>
+/* ============================================================
+   IMAGE PROXY
+   ============================================================ */
+function proxyUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('data:') || url.startsWith('./') || url.startsWith('/')) return url;
+  return 'https://images.weserv.nl/?url=' + encodeURIComponent(url.replace(/^https?:\/\//, ''));
+}
 
-        <section class="project-group" aria-labelledby="group-other">
-          <div class="group-head">
-            <h3 class="group-title" id="group-other"><span class="bracket">[</span> <span data-i18n="group.other">Lainnya</span> <span class="bracket">]</span></h3>
-            <span class="group-count mono">07</span>
-          </div>
+/* ============================================================
+   CONTENT — bilingual aware
+   ============================================================ */
+function buildContent(lang) {
+  const tr = I18N[lang];
+  return [
+    {
+      type: 'about',
+      hudCat: tr.aboutCat,
+      desc: tr.aboutDesc,
+      tags: tr.tags,
+      github: 'https://github.com/Philorganon'
+    },
+    {
+      type: 'projects',
+      hudCat: tr.projectsCat1,
+      label: tr.projectsLabel1,
+      items: tr.projects.slice(0, 4)
+    },
+    {
+      type: 'projects',
+      hudCat: tr.projectsCat2,
+      label: tr.projectsLabel2,
+      items: tr.projects.slice(4, 8)
+    },
+    {
+      type: 'projects',
+      hudCat: tr.projectsCat3,
+      label: tr.projectsLabel3,
+      items: tr.projects.slice(8, 13)
+    },
+    {
+      type: 'music',
+      hudCat: tr.musicCat,
+      song: 'i love you so i can never let you go',
+      audioSrc: 'lagu.mp3'
+    },
+    {
+      type: 'characters',
+      hudCat: tr.charactersCat,
+      characters: [
+        { meta: tr.charMeta1, name: 'Oguri Cap', img: 'https://fiup.vercel.app/f/1782226352974_oguri.jpg', fallbackColor: '#b85d3e' },
+        { meta: tr.charMeta2, name: 'Ryo Yamada', img: 'https://fiup.vercel.app/f/1792499546151_ryo_yamada.jpg', fallbackColor: '#5a6a75' },
+        { meta: tr.charMeta3, name: 'Yutori Natsu', img: 'https://fiup.vercel.app/f/1792500048478_natsu.jpg', fallbackColor: '#8a9a7a' }
+      ]
+    }
+  ];
+}
 
-          <div class="project-grid">
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">07</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.termux.title">Termux Theme</h4>
-              <p data-i18n="proj.termux.desc">Tema custom untuk Termux, tampilan dan warna sesuai selera.</p>
-              <div class="card-foot"><span class="pill">SYSTEM</span><span class="mono">GITHUB</span></div>
-            </a>
+let CONTENT = buildContent(currentLang);
+const FRAME_COUNT = CONTENT.length;
 
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">08</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.axml.title">AXML Audio</h4>
-              <p data-i18n="proj.axml.desc">Eksperimen bikin musik lewat coding XML (AXML).</p>
-              <div class="card-foot"><span class="pill">AUDIO</span><span class="mono">GITHUB</span></div>
-            </a>
+/* ============================================================
+   CHARACTER IMAGES PRELOAD
+   ============================================================ */
+const characterImages = {};
+let characterFrameIndex = -1;
 
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">09</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.website.title">Website</h4>
-              <p data-i18n="proj.website.desc">Beberapa website static yang sudah aku buat.</p>
-              <div class="card-foot"><span class="pill">WEB</span><span class="mono">GITHUB</span></div>
-            </a>
+function preloadCharacterImages() {
+  const cf = CONTENT.find((c, i) => {
+    if (c.type === 'characters') {
+      characterFrameIndex = i;
+      return true;
+    }
+    return false;
+  });
+  if (!cf) return;
 
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">10</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.app.title">Aplikasi</h4>
-              <p data-i18n="proj.app.desc">Aplikasi sederhana yang aku buat untuk belajar.</p>
-              <div class="card-foot"><span class="pill">APP</span><span class="mono">GITHUB</span></div>
-            </a>
+  cf.characters.forEach((ch) => {
+    if (characterImages[ch.name]) return; // Already loaded
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      characterImages[ch.name] = img;
+      reRenderCharacterFrame();
+    };
+    img.onerror = () => console.warn(`[nsn] Failed: ${ch.name}`);
+    img.src = proxyUrl(ch.img);
+  });
+}
 
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">11</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.exe.title">EXE</h4>
-              <p data-i18n="proj.exe.desc">Program executable yang sudah aku compile sendiri.</p>
-              <div class="card-foot"><span class="pill">EXE</span><span class="mono">GITHUB</span></div>
-            </a>
+function reRenderCharacterFrame() {
+  if (characterFrameIndex < 0) return;
+  if (Object.keys(characterImages).length === 0) return;
+  if (!frameTextures[characterFrameIndex]) return;
 
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">12</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.samp.title">SAMP Lua</h4>
-              <p data-i18n="proj.samp.desc">Script lua untuk SA-MP server.</p>
-              <div class="card-foot"><span class="pill">SCRIPT</span><span class="mono">GITHUB</span></div>
-            </a>
+  const newCanvas = makeFrameCanvas(CONTENT[characterFrameIndex], characterFrameIndex);
+  const tex = frameTextures[characterFrameIndex];
+  tex.image = newCanvas;
+  tex.needsUpdate = true;
+}
 
-            <a class="project-card" href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" data-reveal="up" data-tilt>
-              <div class="card-top"><span class="mono">13</span><svg class="card-arrow" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></div>
-              <h4 data-i18n="proj.scripts.title">Script Lainnya</h4>
-              <p data-i18n="proj.scripts.desc">Berbagai script lainnya, lihat di GitHub ku.</p>
-              <div class="card-foot"><span class="pill">SCRIPT</span><span class="mono">GITHUB</span></div>
-            </a>
-          </div>
-        </section>
-      </div>
-    </section>
+/* ============================================================
+   CANVAS BUILDERS
+   ============================================================ */
+function prepareCanvas(W = 1600, H = 1000) {
+  const DPR = 2;
+  const cv = document.createElement('canvas');
+  cv.width = W * DPR;
+  cv.height = H * DPR;
+  const ctx = cv.getContext('2d');
+  ctx.scale(DPR, DPR);
 
-    <!-- MUSIC -->
-    <section class="section music" id="music" aria-labelledby="music-title">
-      <header class="section-head">
-        <span class="section-index" aria-hidden="true">03</span>
-        <h2 class="section-title" id="music-title" data-split data-i18n="music.title">Lagu favorit</h2>
-        <p class="section-sub mono" data-i18n="music.kicker">Music</p>
-      </header>
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#fbf6ed');
+  grad.addColorStop(0.5, '#f8f1e4');
+  grad.addColorStop(1, '#f3ecd9');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
 
-      <div class="player" id="player">
-        <div class="player-art" aria-hidden="true">
-          <div class="vinyl">
-            <span class="vinyl-label"></span>
-          </div>
-          <span class="sticker sticker--track">TRACK / 01</span>
-        </div>
+  ctx.strokeStyle = '#b8a890';
+  ctx.lineWidth = 5;
+  ctx.strokeRect(30, 30, W - 60, H - 60);
+  ctx.strokeStyle = '#8b6f47';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(44, 44, W - 88, H - 88);
 
-        <div class="player-main">
-          <p class="mono player-kicker" data-i18n="music.track">TRACK 01 / FAVORITE</p>
-          <h3 class="song-title" data-i18n="music.song">i love you so i can never let you go</h3>
-          <p class="player-hint" id="player-hint" data-i18n="music.hint">tekan play untuk dengar lagu favorit ku.</p>
+  return { cv, ctx, W, H };
+}
 
-          <div class="player-controls">
-            <button class="play-btn" id="play-btn" type="button" aria-label="Putar lagu" data-i18n-aria="music.play">
-              <svg class="icon-play" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
-              <svg class="icon-pause" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" hidden><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
-            </button>
+function drawAbout(ctx, data, W, H) {
+  ctx.fillStyle = '#7a5a34';
+  ctx.font = '700 42px "JetBrains Mono", monospace';
+  ctx.textBaseline = 'top';
+  ctx.textAlign = 'left';
+  ctx.fillText(data.hudCat, 90, 100);
 
-            <div class="seek-wrap">
-              <input id="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek" data-i18n-aria="music.seek">
-              <div class="time-row mono">
-                <span id="current-time">0:00</span>
-                <span id="duration">0:00</span>
-              </div>
-            </div>
-          </div>
+  ctx.fillStyle = '#6a5c48';
+  ctx.textAlign = 'right';
+  ctx.fillText('2026', W - 90, 100);
+  ctx.textAlign = 'left';
 
-          <div class="equalizer" id="equalizer" aria-hidden="true">
-            <span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span>
-          </div>
+  const startY = 160;
+  const lineH = 155;
 
-          <div class="waveform" id="waveform" aria-hidden="true"></div>
+  ctx.fillStyle = '#1a1712';
+  ctx.font = 'italic 145px "Instrument Serif", serif';
+  ctx.fillText('anos,', 90, startY);
 
-          <div class="player-error" id="player-error" hidden>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
-            <span id="player-error-text" data-i18n="music.error">audio tidak bisa dimuat. pastikan lagu.mp3 ada.</span>
-            <button type="button" id="audio-retry" data-i18n="music.retry">Coba lagi</button>
-          </div>
+  ctx.save();
+  ctx.strokeStyle = '#1a1712';
+  ctx.lineWidth = 3;
+  ctx.strokeText('nosan,', 90, startY + lineH);
+  ctx.restore();
 
-          <audio id="audio" src="lagu.mp3" preload="metadata">
-            browser mu tidak support audio.
-          </audio>
-          <p class="sr-only" data-i18n="music.fallback">browser mu tidak support audio.</p>
-        </div>
-      </div>
-    </section>
+  ctx.fillStyle = '#6b4a2a';
+  ctx.fillText('nsn.', 90, startY + lineH * 2);
 
-    <!-- FAVORITE -->
-    <section class="section favorite" id="favorite" aria-labelledby="favorite-title">
-      <header class="section-head">
-        <span class="section-index" aria-hidden="true">04</span>
-        <h2 class="section-title" id="favorite-title" data-split data-i18n="favorite.title">Favorite</h2>
-        <p class="section-sub mono" data-i18n="favorite.kicker">Characters</p>
-      </header>
+  const ruleY = 670;
+  ctx.strokeStyle = '#b8a890';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(90, ruleY);
+  ctx.lineTo(W - 90, ruleY);
+  ctx.stroke();
 
-      <div class="favorite-showcase">
-        <figure class="fav-hero-card" data-reveal="up" data-tilt>
-          <div class="fav-media">
-            <img src="https://fiup.vercel.app/f/1782226352974_oguri.jpg" alt="Oguri" loading="lazy" decoding="async" referrerpolicy="no-referrer">
-            <span class="fav-fallback">OGURI CAP</span>
-            <span class="sticker sticker--photo">OGURI / 01</span>
-          </div>
-          <figcaption class="fav-info">
-            <span class="mono" data-i18n="fav.oguri.meta">01 / MAIN FAVORITE</span>
-            <h3 data-i18n="fav.oguri.title">Oguri Cap</h3>
-            <p data-i18n="fav.oguri.desc">aku menyukai karakter anime yang memiliki sedikit ekspresi seperti oguri cap.</p>
-          </figcaption>
+  ctx.fillStyle = '#2a2218';
+  ctx.font = '600 46px "Inter", sans-serif';
+  ctx.textBaseline = 'top';
+  const descLines = wrapTextLines(ctx, data.desc, W - 200, 58);
+  descLines.slice(0, 2).forEach((line, i) => {
+    ctx.fillText(line, 90, ruleY + 40 + i * 58);
+  });
+
+  ctx.fillStyle = '#7a5a34';
+  ctx.font = '700 42px "JetBrains Mono", monospace';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(t('clickOpen'), 90, H - 90);
+}
+
+function drawProjects(ctx, data, W, H) {
+  ctx.fillStyle = '#7a5a34';
+  ctx.font = '700 42px "JetBrains Mono", monospace';
+  ctx.textBaseline = 'top';
+  ctx.textAlign = 'left';
+  ctx.fillText(data.hudCat, 90, 100);
+
+  ctx.fillStyle = '#6a5c48';
+  ctx.textAlign = 'right';
+  ctx.fillText(`${data.items.length} ${t('entries')}`, W - 90, 100);
+  ctx.textAlign = 'left';
+
+  ctx.fillStyle = '#1a1712';
+  ctx.font = 'italic 100px "Instrument Serif", serif';
+  ctx.fillText(data.label, 90, 175);
+
+  const ruleY = 340;
+  ctx.strokeStyle = '#b8a890';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(90, ruleY);
+  ctx.lineTo(W - 90, ruleY);
+  ctx.stroke();
+
+  const contentTop = 380;
+  const contentBottom = 880;
+  const contentH = contentBottom - contentTop;
+
+  const colGap = 80;
+  const colW = (W - 200 - colGap) / 2;
+  const itemsPerCol = Math.ceil(data.items.length / 2);
+  const rowH = contentH / itemsPerCol;
+
+  const numSize = 34;
+  const nameSize = 58;
+  const descSize = 40;
+  const numWidth = 70;
+
+  data.items.forEach((p, i) => {
+    const col = Math.floor(i / itemsPerCol);
+    const row = i % itemsPerCol;
+    const x = 90 + col * (colW + colGap);
+    const y = contentTop + row * rowH;
+
+    ctx.fillStyle = '#7a5a34';
+    ctx.font = `700 ${numSize}px "JetBrains Mono", monospace`;
+    ctx.textBaseline = 'top';
+    ctx.fillText(p.num, x, y + 20);
+
+    ctx.fillStyle = '#1a1712';
+    ctx.font = `italic ${nameSize}px "Instrument Serif", serif`;
+    ctx.fillText(p.name, x + numWidth, y + 10);
+
+    ctx.fillStyle = '#5a5248';
+    ctx.font = `600 ${descSize}px "Inter", sans-serif`;
+    const maxDescW = colW - numWidth - 10;
+    let desc = p.desc;
+    while (ctx.measureText(desc).width > maxDescW && desc.length > 3) {
+      desc = desc.slice(0, -2);
+    }
+    if (desc !== p.desc) desc = desc.slice(0, -1) + '…';
+    ctx.fillText(desc, x + numWidth, y + 10 + nameSize + 12);
+  });
+
+  ctx.fillStyle = '#7a5a34';
+  ctx.font = '700 42px "JetBrains Mono", monospace';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(t('clickOpen'), 90, H - 90);
+}
+
+function drawMusic(ctx, data, W, H) {
+  ctx.fillStyle = '#7a5a34';
+  ctx.font = '700 42px "JetBrains Mono", monospace';
+  ctx.textBaseline = 'top';
+  ctx.textAlign = 'left';
+  ctx.fillText(data.hudCat, 90, 100);
+
+  ctx.fillStyle = '#6a5c48';
+  ctx.textAlign = 'right';
+  ctx.fillText(t('track'), W - 90, 100);
+  ctx.textAlign = 'left';
+
+  ctx.fillStyle = '#1a1712';
+  ctx.font = 'italic 100px "Instrument Serif", serif';
+  ctx.fillText(t('musicTitle'), 90, 175);
+
+  const vinylCX = W / 2;
+  const vinylCY = 620;
+  const vinylR = 210;
+
+  ctx.fillStyle = 'rgba(139,111,71,0.18)';
+  ctx.beginPath();
+  ctx.ellipse(vinylCX, vinylCY + vinylR + 35, vinylR * 0.9, 28, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#1a1410';
+  ctx.beginPath();
+  ctx.arc(vinylCX, vinylCY, vinylR, 0, Math.PI * 2);
+  ctx.fill();
+
+  for (let r = 30; r < vinylR; r += 7) {
+    ctx.strokeStyle = `rgba(255,255,255,${0.02 + Math.random() * 0.03})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(vinylCX, vinylCY, r, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#8b6f47';
+  ctx.beginPath();
+  ctx.arc(vinylCX, vinylCY, 80, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = '#2a1a08';
+  ctx.font = 'italic 70px "Instrument Serif", serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('nsn.', vinylCX, vinylCY);
+
+  ctx.fillStyle = '#1a1712';
+  ctx.beginPath();
+  ctx.arc(vinylCX, vinylCY, 11, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'bottom';
+  ctx.fillStyle = '#7a5a34';
+  ctx.font = '700 42px "JetBrains Mono", monospace';
+  ctx.fillText(t('clickPlay'), 90, H - 90);
+}
+
+function drawCharacters(ctx, data, W, H) {
+  ctx.fillStyle = '#7a5a34';
+  ctx.font = '700 42px "JetBrains Mono", monospace';
+  ctx.textBaseline = 'top';
+  ctx.textAlign = 'left';
+  ctx.fillText(data.hudCat, 90, 100);
+
+  ctx.fillStyle = '#6a5c48';
+  ctx.textAlign = 'right';
+  ctx.fillText(`03 ${t('subjects')}`, W - 90, 100);
+  ctx.textAlign = 'left';
+
+  ctx.fillStyle = '#1a1712';
+  ctx.font = 'italic 100px "Instrument Serif", serif';
+  ctx.fillText(t('charactersTitle'), 90, 175);
+
+  const ruleY = 340;
+  ctx.strokeStyle = '#b8a890';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(90, ruleY);
+  ctx.lineTo(W - 90, ruleY);
+  ctx.stroke();
+
+  const contentTop = 380;
+  const nameSpace = 60;
+  const contentBottom = 860;
+  const cardH = contentBottom - contentTop - nameSpace;
+  const cardGap = 40;
+  const cardW = (W - 200 - cardGap * 2) / 3;
+
+  data.characters.forEach((ch, i) => {
+    const x = 90 + i * (cardW + cardGap);
+    const y = contentTop;
+    const img = characterImages[ch.name];
+
+    if (img && img.complete && img.naturalWidth > 0) {
+      drawImageCover(ctx, img, x, y, cardW, cardH);
+
+      const vg = ctx.createRadialGradient(x + cardW / 2, y + cardH / 2, cardW * 0.3, x + cardW / 2, y + cardH / 2, cardW * 0.8);
+      vg.addColorStop(0, 'rgba(0,0,0,0)');
+      vg.addColorStop(1, 'rgba(0,0,0,0.45)');
+      ctx.fillStyle = vg;
+      ctx.fillRect(x, y, cardW, cardH);
+
+      ctx.strokeStyle = 'rgba(255, 245, 230, 0.15)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, cardW, cardH);
+    } else {
+      ctx.fillStyle = ch.fallbackColor;
+      ctx.fillRect(x, y, cardW, cardH);
+
+      const vg = ctx.createRadialGradient(x + cardW / 2, y + cardH / 2, 0, x + cardW / 2, y + cardH / 2, cardW * 0.7);
+      vg.addColorStop(0, 'rgba(255,255,255,0.15)');
+      vg.addColorStop(1, 'rgba(0,0,0,0.3)');
+      ctx.fillStyle = vg;
+      ctx.fillRect(x, y, cardW, cardH);
+
+      ctx.fillStyle = 'rgba(250,245,236,0.6)';
+      ctx.font = 'italic 260px "Instrument Serif", serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(ch.name[0], x + cardW / 2, y + cardH / 2);
+      ctx.textAlign = 'left';
+    }
+
+    ctx.fillStyle = 'rgba(250,245,236,0.92)';
+    ctx.font = '700 32px "JetBrains Mono", monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.shadowBlur = 6;
+    ctx.fillText(ch.meta, x + 20, y + 20);
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = '#1a1712';
+    ctx.font = 'italic 46px "Instrument Serif", serif';
+    ctx.textBaseline = 'top';
+    ctx.fillText(ch.name, x, y + cardH + 16);
+  });
+
+  ctx.fillStyle = '#7a5a34';
+  ctx.font = '700 42px "JetBrains Mono", monospace';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(t('clickView'), 90, H - 90);
+}
+
+function drawImageCover(ctx, img, x, y, w, h) {
+  const imgRatio = img.width / img.height;
+  const boxRatio = w / h;
+  let sx, sy, sw, sh;
+  if (imgRatio > boxRatio) {
+    sh = img.height; sw = sh * boxRatio;
+    sx = (img.width - sw) / 2; sy = 0;
+  } else {
+    sw = img.width; sh = sw / boxRatio;
+    sx = 0; sy = (img.height - sh) / 2;
+  }
+  ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+}
+
+function wrapTextLines(ctx, text, maxW, lineH) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  for (const w of words) {
+    const test = (line + ' ' + w).trim();
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line);
+      line = w;
+    } else line = test;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function makeFrameCanvas(data, index) {
+  const { cv, ctx, W, H } = prepareCanvas();
+  if (data.type === 'about') drawAbout(ctx, data, W, H);
+  else if (data.type === 'projects') drawProjects(ctx, data, W, H);
+  else if (data.type === 'music') drawMusic(ctx, data, W, H);
+  else if (data.type === 'characters') drawCharacters(ctx, data, W, H);
+  return cv;
+}
+
+/* ============================================================
+   THREE.JS SCENE
+   ============================================================ */
+const FRAME_W = isMobile ? 7.5 : 7.2;
+const FRAME_H = isMobile ? 4.7 : 4.5;
+
+const canvas = document.getElementById('c');
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x0a0e1a, isMobile ? 0.012 : 0.016);
+
+const camera = new THREE.PerspectiveCamera(isMobile ? 65 : 52, window.innerWidth / window.innerHeight, 0.1, 400);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, DPR_CAP));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+
+/* SKY */
+const skyGeo = new THREE.SphereGeometry(300, isMobile ? 32 : 64, isMobile ? 24 : 32);
+const skyMat = new THREE.ShaderMaterial({
+  uniforms: {
+    horizonColor: { value: new THREE.Color(0x2a2418) },
+    zenithColor: { value: new THREE.Color(0x05050f) },
+    moonColor: { value: new THREE.Color(0xf0ead8) },
+    moonDirection: { value: new THREE.Vector3(-0.6, 0.35, -0.5).normalize() }
+  },
+  vertexShader: `varying vec3 vWorldPosition; void main() { vec4 wp = modelMatrix * vec4(position, 1.0); vWorldPosition = wp.xyz; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: `
+    uniform vec3 horizonColor;
+    uniform vec3 zenithColor;
+    uniform vec3 moonColor;
+    uniform vec3 moonDirection;
+    varying vec3 vWorldPosition;
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+    void main() {
+      vec3 dir = normalize(vWorldPosition);
+      float h = dir.y;
+      float t = smoothstep(-0.1, 0.55, h);
+      vec3 col = mix(horizonColor, zenithColor, t);
+      if (h > 0.0) {
+        vec2 suv = dir.xz / max(h, 0.2) * 40.0;
+        vec2 g = floor(suv); vec2 f = fract(suv);
+        float r = hash(g);
+        if (r > 0.992) {
+          vec2 sp = vec2(hash(g + 1.0), hash(g + 2.0));
+          float d = length(f - sp);
+          float s = smoothstep(0.05, 0.0, d);
+          float tw = 0.7 + 0.3 * sin(h * 20.0 + r * 100.0);
+          col += vec3(0.9, 0.92, 1.0) * s * tw * smoothstep(0.0, 0.3, h);
+        }
+      }
+      float ma = dot(dir, moonDirection);
+      float md = smoothstep(0.9985, 1.0, ma);
+      float mh = pow(max(0.0, ma), 64.0) * 0.5;
+      float mg = pow(max(0.0, ma), 8.0) * 0.08;
+      col += moonColor * md * 1.2 + moonColor * mh * 0.8 + moonColor * mg * 0.4;
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `,
+  side: THREE.BackSide,
+  fog: false
+});
+scene.add(new THREE.Mesh(skyGeo, skyMat));
+
+scene.add(new THREE.AmbientLight(0x40507a, 0.7));
+const moonLight = new THREE.DirectionalLight(0xd0d8f0, 1.2);
+moonLight.position.set(-30, 20, -25);
+scene.add(moonLight);
+const frontLight = new THREE.DirectionalLight(0xffe0b0, 0.9);
+frontLight.position.set(10, 5, 15);
+scene.add(frontLight);
+
+const FRAME_POSITIONS = [
+  { x: -3.5, y: 2.6, z: 0, rotY: 0.15 },
+  { x: 3.0, y: 2.4, z: -12, rotY: -0.18 },
+  { x: -3.5, y: 2.8, z: -24, rotY: 0.2 },
+  { x: 3.0, y: 2.5, z: -36, rotY: -0.15 },
+  { x: -3.5, y: 2.7, z: -48, rotY: 0.18 },
+  { x: 3.0, y: 2.5, z: -60, rotY: -0.15 }
+];
+
+const frames = [];
+const frameTextures = [];
+const frameContentMeshes = [];
+
+function buildFrameObjects() {
+  CONTENT.forEach((data, i) => {
+    const pos = FRAME_POSITIONS[i];
+    const cv = makeFrameCanvas(data, i);
+    const tex = new THREE.CanvasTexture(cv);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    frameTextures.push(tex);
+
+    const group = new THREE.Group();
+    group.position.set(pos.x, pos.y, pos.z);
+    group.rotation.y = pos.rotY;
+
+    const border = new THREE.Mesh(
+      new THREE.BoxGeometry(FRAME_W + 0.35, FRAME_H + 0.35, 0.15),
+      new THREE.MeshStandardMaterial({ color: 0x3a2818, roughness: 0.6, metalness: 0.5, emissive: 0x8b6f47, emissiveIntensity: 0.1 })
+    );
+    group.add(border);
+
+    const content = new THREE.Mesh(
+      new THREE.PlaneGeometry(FRAME_W, FRAME_H),
+      new THREE.MeshBasicMaterial({ map: tex })
+    );
+    content.position.z = 0.08;
+    group.add(content);
+    frameContentMeshes.push(content);
+
+    // Glow above
+    const gc = document.createElement('canvas');
+    gc.width = 256; gc.height = 96;
+    const gC = gc.getContext('2d');
+    const gG = gC.createRadialGradient(128, 96, 0, 128, 96, 128);
+    gG.addColorStop(0, 'rgba(255, 220, 160, 0.55)');
+    gG.addColorStop(1, 'rgba(255, 220, 160, 0)');
+    gC.fillStyle = gG;
+    gC.fillRect(0, 0, 256, 96);
+    const glowTex = new THREE.CanvasTexture(gc);
+    const glow = new THREE.Mesh(
+      new THREE.PlaneGeometry(FRAME_W * 1.3, 1.4),
+      new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, opacity: 0.75, depthWrite: false, blending: THREE.AdditiveBlending })
+    );
+    glow.position.set(0, FRAME_H / 2 + 0.7, 0.1);
+    group.add(glow);
+
+    // Beam below
+    const bc = document.createElement('canvas');
+    bc.width = 128; bc.height = 256;
+    const bC = bc.getContext('2d');
+    const bG = bC.createLinearGradient(0, 0, 0, 256);
+    bG.addColorStop(0, 'rgba(255, 220, 160, 0.18)');
+    bG.addColorStop(0.5, 'rgba(255, 220, 160, 0.06)');
+    bG.addColorStop(1, 'rgba(255, 220, 160, 0)');
+    bC.fillStyle = bG;
+    bC.fillRect(0, 0, 128, 256);
+    const beamTex = new THREE.CanvasTexture(bc);
+    const beam = new THREE.Mesh(
+      new THREE.PlaneGeometry(FRAME_W * 0.9, 6),
+      new THREE.MeshBasicMaterial({ map: beamTex, transparent: true, opacity: 0.6, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide })
+    );
+    beam.position.set(0, -FRAME_H / 2 - 3, 0.05);
+    group.add(beam);
+
+    // Halo
+    const hc = document.createElement('canvas');
+    hc.width = 256; hc.height = 256;
+    const hC = hc.getContext('2d');
+    const hG = hC.createRadialGradient(128, 128, 60, 128, 128, 128);
+    hG.addColorStop(0, 'rgba(232, 160, 79, 0.4)');
+    hG.addColorStop(1, 'rgba(232, 160, 79, 0)');
+    hC.fillStyle = hG;
+    hC.fillRect(0, 0, 256, 256);
+    const haloTex = new THREE.CanvasTexture(hc);
+    const halo = new THREE.Mesh(
+      new THREE.PlaneGeometry(FRAME_W * 1.6, FRAME_H * 1.5),
+      new THREE.MeshBasicMaterial({ map: haloTex, transparent: true, opacity: 0.85, depthWrite: false, blending: THREE.AdditiveBlending })
+    );
+    halo.position.z = -0.1;
+    group.add(halo);
+
+    group.userData = { index: i, data, content, basePos: group.position.clone(), baseRotY: pos.rotY, hovered: false, phase: i * 0.9 };
+    scene.add(group);
+    frames.push(group);
+  });
+}
+
+buildFrameObjects();
+
+/* Stars */
+const starCount = isMobile ? 400 : 900;
+const starGeo = new THREE.BufferGeometry();
+const starPos = new Float32Array(starCount * 3);
+for (let i = 0; i < starCount; i++) {
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(2 * Math.random() - 1);
+  const r = 150 + Math.random() * 50;
+  starPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+  starPos[i * 3 + 1] = Math.abs(r * Math.cos(phi)) * 0.6 + 5;
+  starPos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xf0ead8, size: 0.4, transparent: true, opacity: 0.9, depthWrite: false, sizeAttenuation: true }));
+scene.add(stars);
+
+/* Dust */
+const dPos = new Float32Array(DUST_COUNT * 3);
+const dSpd = new Float32Array(DUST_COUNT);
+for (let i = 0; i < DUST_COUNT; i++) {
+  dPos[i * 3] = (Math.random() - 0.5) * 40;
+  dPos[i * 3 + 1] = (Math.random() - 0.5) * 20;
+  dPos[i * 3 + 2] = 15 - Math.random() * 80;
+  dSpd[i] = 0.02 + Math.random() * 0.06;
+}
+const dustGeo = new THREE.BufferGeometry();
+dustGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
+const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0xe8a04f, size: 0.07, transparent: true, opacity: 0.65, depthWrite: false, sizeAttenuation: true, blending: THREE.AdditiveBlending }));
+scene.add(dust);
+
+/* Camera stops */
+const CAMERA_DIST = isMobile ? 14 : 7.5;
+const CAMERA_HEIGHT = 0.2;
+const cameraStops = FRAME_POSITIONS.map(f => ({
+  cam: new THREE.Vector3(f.x, f.y + CAMERA_HEIGHT, f.z + CAMERA_DIST),
+  look: new THREE.Vector3(f.x, f.y, f.z)
+}));
+cameraStops.push({ cam: new THREE.Vector3(0, 3.2, -68), look: new THREE.Vector3(0, 3.2, -78) });
+
+/* State */
+let scrollProgress = 0;
+let lastScrollY = window.scrollY;
+let scrollVelocity = 0;
+let currentIndex = 0;
+let hoveredGroup = null;
+const mouse = new THREE.Vector2(-10, -10);
+const mouseNorm = { x: 0, y: 0 };
+const raycaster = new THREE.Raycaster();
+let cursorX = window.innerWidth / 2;
+let cursorY = window.innerHeight / 2;
+let cursorTX = cursorX;
+let cursorTY = cursorY;
+const cursorEl = document.getElementById('cursor');
+
+window.addEventListener('scroll', () => {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  scrollProgress = Math.max(0, Math.min(1, window.scrollY / max));
+  scrollVelocity = window.scrollY - lastScrollY;
+  lastScrollY = window.scrollY;
+  if (scrollProgress > 0.02) document.getElementById('hud-hint').classList.add('hidden');
+}, { passive: true });
+
+if (!isMobile) {
+  window.addEventListener('mousemove', (e) => {
+    cursorTX = e.clientX; cursorTY = e.clientY;
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    mouseNorm.x = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseNorm.y = (e.clientY / window.innerHeight - 0.5) * 2;
+  }, { passive: true });
+
+  window.addEventListener('click', () => {
+    if (modalBackdrop.classList.contains('active')) return;
+    if (!hoveredGroup) return;
+    openModal(hoveredGroup.userData.index);
+  });
+} else {
+  window.addEventListener('touchstart', (e) => {
+    if (modalBackdrop.classList.contains('active')) return;
+    const t = e.touches[0];
+    cursorTX = t.clientX; cursorTY = t.clientY;
+    mouse.x = (t.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(t.clientY / window.innerHeight) * 2 + 1;
+  }, { passive: true });
+
+  window.addEventListener('touchend', () => {
+    if (modalBackdrop.classList.contains('active')) return;
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObjects(frameContentMeshes, false);
+    if (hits.length > 0) {
+      const group = frames.find(f => f.userData.content === hits[0].object);
+      if (group) openModal(group.userData.index);
+    }
+  }, { passive: true });
+}
+
+/* HUD */
+const hudProgress = document.getElementById('hud-progress');
+const hudDots = [];
+for (let i = 0; i < FRAME_COUNT; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'hud-dot' + (i === 0 ? ' active' : '');
+  hudProgress.appendChild(dot);
+  hudDots.push(dot);
+}
+
+function updateHUD() {
+  document.getElementById('hud-frame').textContent = String(currentIndex + 1).padStart(2, '0');
+  hudDots.forEach((d, i) => {
+    d.classList.remove('active', 'near');
+    if (i === currentIndex) d.classList.add('active');
+    else if (Math.abs(i - currentIndex) === 1) d.classList.add('near');
+  });
+}
+
+/* ============================================================
+   LANGUAGE
+   ============================================================ */
+function applyLanguage(lang, options = {}) {
+  currentLang = lang;
+
+  try { localStorage.setItem('nsn.lang', lang); } catch (e) {}
+
+  document.documentElement.setAttribute('data-lang', lang);
+  document.documentElement.setAttribute('lang', lang);
+
+  // Static UI
+  document.getElementById('hudSubtitle').textContent = t('subtitle');
+  document.getElementById('hudHintText').textContent = t('hint');
+
+  // Rebuild content
+  CONTENT = buildContent(lang);
+
+  // Update frame userData references
+  frames.forEach((group, i) => {
+    group.userData.data = CONTENT[i];
+  });
+
+  // Rebuild canvas textures
+  CONTENT.forEach((data, i) => {
+    const cv = makeFrameCanvas(data, i);
+    if (frameTextures[i]) {
+      frameTextures[i].image = cv;
+      frameTextures[i].needsUpdate = true;
+    }
+  });
+
+  // Language switcher buttons
+  document.querySelectorAll('[data-set-lang]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.setLang === lang);
+  });
+
+  // If modal is open, re-render it
+  if (modalBackdrop.classList.contains('active')) {
+    const openIndex = parseInt(modalBackdrop.dataset.currentIndex, 10);
+    if (!isNaN(openIndex)) openModal(openIndex);
+  }
+
+  if (options.skipHUD !== true) updateHUD();
+}
+
+document.querySelectorAll('[data-set-lang]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    applyLanguage(btn.dataset.setLang);
+  });
+});
+
+/* Modal */
+const modalBackdrop = document.getElementById('modal-backdrop');
+const modalContent = document.getElementById('modal-content');
+const modalClose = document.getElementById('modal-close');
+
+function openModal(index) {
+  modalBackdrop.dataset.currentIndex = String(index);
+  modalContent.innerHTML = buildModalContent(CONTENT[index]);
+  modalBackdrop.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  cursorEl.classList.remove('hover');
+}
+
+function closeModal() {
+  modalBackdrop.classList.remove('active');
+  modalBackdrop.dataset.currentIndex = '';
+  document.body.style.overflow = '';
+  const a = modalContent.querySelector('audio');
+  if (a) a.pause();
+}
+
+modalClose.addEventListener('click', closeModal);
+modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+function buildModalContent(data) {
+  const tr = I18N[currentLang];
+
+  if (data.type === 'about') return `
+    <div class="modal-cat">${tr.modalAboutCat}</div>
+    <h2 class="modal-title">${tr.modalAboutTitle}</h2>
+    <div class="modal-body"><p>${data.desc}</p></div>
+    <div class="modal-tags">${data.tags.map(t => `<span>${t}</span>`).join('')}</div>
+    <a href="${data.github}" target="_blank" rel="noopener noreferrer" class="modal-cta"><span>${tr.modalGithub}</span><span>↗</span></a>
+  `;
+
+  if (data.type === 'projects') return `
+    <div class="modal-cat">${tr.modalAllProjectsCat}</div>
+    <h2 class="modal-title">${tr.modalAllProjectsTitle}</h2>
+    <div class="modal-list">
+      ${tr.projects.map(p => `
+        <a href="https://github.com/Philorganon" target="_blank" rel="noopener noreferrer" class="modal-item">
+          <span class="modal-item-num">${p.num}</span>
+          <span><span class="modal-item-name">${p.name}</span><span class="modal-item-desc">${p.desc}</span></span>
+          <span class="modal-item-arrow">→</span>
+        </a>
+      `).join('')}
+    </div>
+  `;
+
+  if (data.type === 'music') return `
+    <div class="modal-cat">${tr.modalMusicCat}</div>
+    <h2 class="modal-title">${tr.modalMusicTitle}</h2>
+    <div class="modal-body"><p>${tr.modalMusicDesc}</p></div>
+    <div class="modal-audio">
+      <div class="modal-audio-title">${data.song}</div>
+      <audio src="${data.audioSrc}" preload="metadata" controls></audio>
+    </div>
+  `;
+
+  if (data.type === 'characters') return `
+    <div class="modal-cat">${tr.modalCharactersCat}</div>
+    <h2 class="modal-title">${tr.modalCharactersTitle}</h2>
+    <div class="modal-gallery">
+      ${data.characters.map(ch => `
+        <figure>
+          <img src="${proxyUrl(ch.img)}" alt="${ch.name}" loading="lazy">
+          <figcaption><small>${ch.meta}</small>${ch.name}</figcaption>
         </figure>
-
-        <div class="fav-secondary">
-          <figure class="fav-mini-card" data-reveal="up" data-tilt>
-            <div class="fav-media">
-              <img src="https://fiup.vercel.app/f/1792499546151_ryo_yamada.jpg" alt="Ryo Yamada" loading="lazy" decoding="async" referrerpolicy="no-referrer">
-              <span class="fav-fallback">RYO YAMADA</span>
-              <span class="sticker sticker--photo">RYO / 02</span>
-            </div>
-            <figcaption class="fav-info">
-              <span class="mono" data-i18n="fav.ryo.meta">02 / RYO</span>
-              <h3 data-i18n="fav.ryo.title">Ryo Yamada</h3>
-              <p data-i18n="fav.ryo.desc">gitaris Kessoku Band. ekspresinya datar, tapi itu yang bikin dia menarik.</p>
-            </figcaption>
-          </figure>
-
-          <figure class="fav-mini-card" data-reveal="up" data-tilt>
-            <div class="fav-media">
-              <img src="https://fiup.vercel.app/f/1792500048478_natsu.jpg" alt="Yutori Natsu" loading="lazy" decoding="async" referrerpolicy="no-referrer">
-              <span class="fav-fallback">YUTORI NATSU</span>
-              <span class="sticker sticker--photo">NATSU / 03</span>
-            </div>
-            <figcaption class="fav-info">
-              <span class="mono" data-i18n="fav.natsu.meta">03 / NATSU</span>
-              <h3 data-i18n="fav.natsu.title">Yutori Natsu</h3>
-              <p data-i18n="fav.natsu.desc">karakter dari Blue Archive. senyum kecil, tatapan tenang.</p>
-            </figcaption>
-          </figure>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- SETTINGS -->
-  <dialog id="settings-dialog" aria-labelledby="settings-title">
-    <div class="settings-shell">
-      <header class="settings-head">
-        <div>
-          <p class="mono settings-kicker" data-i18n="settings.kicker">PENGATURAN</p>
-          <h2 class="settings-title" id="settings-title" data-i18n="settings.title">Atur tampilan.</h2>
-        </div>
-        <button class="icon-btn" id="close-settings" type="button" aria-label="Tutup pengaturan" data-i18n-aria="settings.close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-        </button>
-      </header>
-
-      <div class="settings-body">
-        <section class="setting-block">
-          <h3 data-i18n="settings.language">Bahasa</h3>
-          <div class="segmented" role="group" aria-label="Language" data-i18n-aria="settings.language">
-            <button type="button" data-lang="id">Indonesia</button>
-            <button type="button" data-lang="en">English</button>
-          </div>
-        </section>
-
-        <section class="setting-block">
-          <h3 data-i18n="settings.theme">Tema</h3>
-          <div class="theme-grid" role="group" aria-label="Theme" data-i18n-aria="settings.theme">
-            <button type="button" class="theme-card" data-set-theme="brutalism">
-              <span class="theme-preview preview--brutalism" aria-hidden="true"><span>Aa</span><i></i><i></i></span>
-              <span class="theme-name" data-i18n="theme.brutalism">Brutalism</span>
-            </button>
-            <button type="button" class="theme-card" data-set-theme="simple">
-              <span class="theme-preview preview--simple" aria-hidden="true"><span>Aa</span><i></i><i></i></span>
-              <span class="theme-name" data-i18n="theme.simple">Simple</span>
-            </button>
-            <button type="button" class="theme-card" data-set-theme="darkglass">
-              <span class="theme-preview preview--darkglass" aria-hidden="true"><span>Aa</span><i></i><i></i></span>
-              <span class="theme-name" data-i18n="theme.darkglass">Dark Glass</span>
-            </button>
-            <button type="button" class="theme-card" data-set-theme="terminal">
-              <span class="theme-preview preview--terminal" aria-hidden="true"><span>Aa</span><i></i><i></i></span>
-              <span class="theme-name" data-i18n="theme.terminal">Terminal</span>
-            </button>
-          </div>
-        </section>
-
-        <section class="setting-block">
-          <h3 data-i18n="settings.accent">Warna Aksen</h3>
-          <div class="swatches" role="group" aria-label="Accent color" data-i18n-aria="settings.accent">
-            <button type="button" class="swatch" data-accent="#FF7EB6" style="--swatch:#FF7EB6" aria-label="Sakura"></button>
-            <button type="button" class="swatch" data-accent="#8FD14F" style="--swatch:#8FD14F" aria-label="Matcha"></button>
-            <button type="button" class="swatch" data-accent="#5B8CFF" style="--swatch:#5B8CFF" aria-label="Sora"></button>
-            <button type="button" class="swatch" data-accent="#FFD23F" style="--swatch:#FFD23F" aria-label="Yuzu"></button>
-            <button type="button" class="swatch" data-accent="#B69CFF" style="--swatch:#B69CFF" aria-label="Lavender"></button>
-            <button type="button" class="swatch" data-accent="#FF6B5E" style="--swatch:#FF6B5E" aria-label="Coral"></button>
-          </div>
-
-          <label class="custom-color">
-            <span data-i18n="settings.custom">Custom</span>
-            <input type="color" id="accent-custom" value="#ff7eb6" aria-label="Custom accent color">
-          </label>
-        </section>
-      </div>
+      `).join('')}
     </div>
-  </dialog>
+  `;
 
-  <script src="script.js" defer></script>
+  return '';
+}
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+/* Animate */
+const clock = new THREE.Clock();
+const camPos = new THREE.Vector3();
+const lookAt = new THREE.Vector3();
+const tmpV = new THREE.Vector3();
+
+function smoothstep(t) { return t * t * (3 - 2 * t); }
+
+function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const time = clock.getElapsedTime();
+
+  const stopsLen = cameraStops.length - 1;
+  const fi = scrollProgress * stopsLen;
+  const idx = Math.min(Math.floor(fi), stopsLen);
+  const frac = smoothstep(fi - idx);
+  const from = cameraStops[idx];
+  const to = cameraStops[Math.min(idx + 1, cameraStops.length - 1)];
+
+  camPos.lerpVectors(from.cam, to.cam, frac);
+  lookAt.lerpVectors(from.look, to.look, frac);
+
+  const px = isMobile ? 0 : mouseNorm.x * 0.6;
+  const py = isMobile ? 0 : -mouseNorm.y * 0.3;
+
+  camera.position.x += (camPos.x + px - camera.position.x) * 0.08;
+  camera.position.y += (camPos.y + py - camera.position.y) * 0.08;
+  camera.position.z += (camPos.z - camera.position.z) * 0.08;
+  camera.lookAt(lookAt.x + px * 0.3, lookAt.y + py * 0.3, lookAt.z);
+
+  let nearest = 0;
+  let nearestDist = Infinity;
+  frames.forEach((g, i) => {
+    const d = g.position.distanceTo(camera.position);
+    if (d < nearestDist) { nearestDist = d; nearest = i; }
+  });
+  if (nearest !== currentIndex && nearestDist < (isMobile ? 20 : 12)) {
+    currentIndex = nearest;
+    updateHUD();
+  }
+
+  if (!isMobile) {
+    raycaster.setFromCamera(mouse, camera);
+    const hits = raycaster.intersectObjects(frameContentMeshes, false);
+    let newHovered = null;
+    if (hits.length > 0) {
+      const g = frames.find(f => f.userData.content === hits[0].object);
+      if (g) newHovered = g;
+    }
+    if (newHovered !== hoveredGroup) {
+      if (hoveredGroup) hoveredGroup.userData.hovered = false;
+      hoveredGroup = newHovered;
+      if (hoveredGroup) { hoveredGroup.userData.hovered = true; cursorEl.classList.add('hover'); }
+      else cursorEl.classList.remove('hover');
+    }
+  }
+
+  frames.forEach((group) => {
+    const ud = group.userData;
+    group.position.y = ud.basePos.y + Math.sin(time * 0.5 + ud.phase) * 0.12;
+    group.rotation.y = ud.baseRotY + Math.sin(time * 0.3 + ud.phase) * 0.015;
+    const ts = ud.hovered ? 1.03 : 1;
+    group.scale.lerp(tmpV.set(ts, ts, ts), 0.1);
+    const tz = ud.hovered ? ud.basePos.z + 0.25 : ud.basePos.z;
+    group.position.z += (tz - group.position.z) * 0.1;
+  });
+
+  stars.rotation.y = time * 0.003;
+
+  const dP = dustGeo.attributes.position.array;
+  for (let i = 0; i < DUST_COUNT; i++) {
+    dP[i * 3 + 1] += dSpd[i] * dt * 0.5;
+    dP[i * 3] += Math.sin(time * 0.3 + i) * 0.005;
+    if (dP[i * 3 + 1] > 12) dP[i * 3 + 1] = -12;
+  }
+  dustGeo.attributes.position.needsUpdate = true;
+
+  if (!isMobile) {
+    cursorX += (cursorTX - cursorX) * 0.32;
+    cursorY += (cursorTY - cursorY) * 0.32;
+    cursorEl.style.left = cursorX + 'px';
+    cursorEl.style.top = cursorY + 'px';
+  }
+
+  document.getElementById('hud-pct').textContent = String(Math.round(scrollProgress * 100)).padStart(3, '0') + '%';
+
+  const st = document.getElementById('hud-state');
+  if (Math.abs(scrollVelocity) > 4) st.textContent = t('stateDrifting');
+  else if (hoveredGroup) st.textContent = t('stateInspect');
+  else st.textContent = t('stateFloating');
+
+  renderer.render(scene, camera);
+}
+
+/* Initialize */
+updateHUD();
+camera.position.copy(cameraStops[0].cam);
+camera.lookAt(cameraStops[0].look);
+preloadCharacterImages();
+
+document.fonts.ready.then(() => {
+  // Apply language once fonts ready (canvas needs correct fonts for measurement)
+  applyLanguage(currentLang, { skipHUD: true });
+
+  setTimeout(() => {
+    if (Object.keys(characterImages).length > 0) reRenderCharacterFrame();
+  }, 1500);
+  setTimeout(() => document.getElementById('loading').classList.add('hidden'), 500);
+});
+
+animate();
+</script>
 </body>
 </html>
